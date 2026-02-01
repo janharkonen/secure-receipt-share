@@ -1,0 +1,18 @@
+{
+  "projectName": "secure-receipt-share",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "bun",
+  "tailwind": true,
+  "addOnOptions": {},
+  "git": true,
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "eslint",
+    "railway",
+    "start",
+    "convex",
+    "shadcn"
+  ]
+}
