@@ -1,0 +1,165 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# Language for reviews
+language: "en-US"
+
+# Enable early access features (beta features)
+early_access: true
+
+# Review configuration
+reviews:
+  # Review profile: "chill" (lenient), "assertive" (strict), or "default"
+  profile: "assertive"
+  
+  # Allow CodeRabbit to request changes (not just comment)
+  request_changes_workflow: true
+  
+  # Generate a high-level summary of changes
+  high_level_summary: true
+  
+  # Generate a fun poem about the changes (optional)
+  poem: false
+  
+  # Show review status in PR
+  review_status: true
+  
+  # Collapse the walkthrough section
+  collapse_walkthrough: false
+  
+  # Auto-review configuration for PRs
+  auto_review:
+    enabled: true
+    # Also review draft PRs
+    drafts: true
+    # Ignore certain file patterns from review
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+  
+  # Pre-merge checks (reviews before merging)
+  pre_merge_checks:
+    # Require docstrings
+    docstrings:
+      mode: "warning"
+      threshold: 70
+    # PR title requirements
+    title:
+      mode: "warning"
+      requirements: "Start with type (feat/fix/docs/refactor/test/chore), use imperative mood, keep under 72 characters."
+    # PR description requirements
+    description:
+      mode: "warning"
+    # Custom checks
+    custom_checks:
+      - name: "Security Review"
+        mode: "error"
+        instructions: "Check for hardcoded secrets, API keys, passwords, or credentials. Verify authentication and authorization logic is properly implemented."
+      - name: "Type Safety"
+        mode: "warning"
+        instructions: "Ensure TypeScript types are properly used. Check for any use of 'any' type that could be replaced with proper types."
+  
+  # Tools configuration
+  tools:
+    eslint:
+      enabled: true
+    gitleaks:
+      enabled: true
+  
+  # Path-specific review instructions
+  path_instructions:
+    # TypeScript/React components
+    - path: "src/components/**/*.tsx"
+      instructions: |
+        Review React components for:
+        - Proper use of React 19 features
+        - Accessibility (a11y) best practices
+        - Component composition and reusability
+        - Proper TypeScript typing for props
+        - Use of shadcn/ui patterns where applicable
+    
+    # TanStack Router routes
+    - path: "src/routes/**/*.tsx"
+      instructions: |
+        Review TanStack Router route files for:
+        - Proper route configuration and loaders
+        - Type-safe routing patterns
+        - Correct use of TanStack Start SSR features
+        - Proper error boundary handling
+    
+    - path: "src/routes/**/*.ts"
+      instructions: |
+        Review TanStack Router API routes for:
+        - Proper request/response handling
+        - Authentication and authorization checks
+        - Input validation
+        - Error handling
+    
+    # Convex backend
+    - path: "convex/**/*.ts"
+      instructions: |
+        Review Convex backend code for:
+        - Proper use of Convex validators (v.string(), v.id(), etc.)
+        - Correct query/mutation/action patterns
+        - Proper authentication checks using Better Auth integration
+        - Efficient database queries and index usage
+        - Schema consistency with the defined schema
+    
+    # Utility functions
+    - path: "src/lib/**/*.ts"
+      instructions: |
+        Review utility code for:
+        - Type safety and proper exports
+        - Reusability and single responsibility
+        - Proper error handling
+        - Authentication configuration correctness (Better Auth)
+    
+    # Test files
+    - path: "**/*.test.ts"
+      instructions: |
+        Review test files for:
+        - Comprehensive test coverage
+        - Use of Vitest best practices
+        - Proper mocking and assertions
+        - Edge case handling
+    
+    - path: "**/*.test.tsx"
+      instructions: |
+        Review React component tests for:
+        - Use of React Testing Library best practices
+        - Accessibility testing
+        - User interaction testing
+        - Proper async handling
+
+# Chat configuration
+chat:
+  # Auto-reply to user questions
+  auto_reply: true
+
+# Code generation settings
+code_generation:
+  # Docstring generation instructions
+  docstrings:
+    path_instructions:
+      - path: "**/*.ts"
+        instructions: |
+          Use JSDoc style comments.
+          Include @param and @returns tags where applicable.
+          Keep descriptions concise but informative.
+      - path: "**/*.tsx"
+        instructions: |
+          Document component props using JSDoc.
+          Include usage examples for complex components.
+  
+  # Unit test generation instructions
+  unit_tests:
+    path_instructions:
+      - path: "**/*.ts"
+        instructions: |
+          Use Vitest as the testing framework.
+          Include edge cases and error conditions.
+          Use proper TypeScript types in test expectations.
+      - path: "src/components/**/*.tsx"
+        instructions: |
+          Use React Testing Library for component tests.
+          Test user interactions and accessibility.
+          Mock Convex hooks appropriately.
