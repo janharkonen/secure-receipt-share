@@ -6,3 +6,4 @@
 4. Add BETTER_AUTH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SITE_URL to convex cloud env variables.
 5. Add VITE_CONVEX_URL, VITE_CONVEX_SITE_URL to /apps/web/.env
 6. run 'bun run dev'
+7. add tech stack rule
