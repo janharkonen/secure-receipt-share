@@ -7,3 +7,5 @@
 5. Add VITE_CONVEX_URL, VITE_CONVEX_SITE_URL to /apps/web/.env
 6. run 'bun run dev'
 7. add tech stack rule
+8. remove boilerplate frontend and convex code
+9. make front page login page (google)
