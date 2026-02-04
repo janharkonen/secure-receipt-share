@@ -1,0 +1,36 @@
+---
+description: Project tech stack and technology choices
+alwaysApply: true
+---
+
+# Tech Stack
+
+This project uses the following technologies:
+
+## Framework & Frontend
+- **TanStack Start** - React meta-framework with SSR support
+- **TanStack Router** - Type-safe file-based routing
+- **React 19** - UI library
+- **Vite 7** - Build tool and dev server
+
+## Backend & Database
+- **Convex** - Real-time serverless backend and database
+- **Better Auth** - Authentication library integrated with Convex via `@convex-dev/better-auth`
+
+## Styling & UI
+- **Tailwind CSS 4** - Utility-first CSS framework
+- **shadcn/ui** - Component library (install via `pnpm dlx shadcn@latest add <component>`)
+- **Lucide React** - Icon library
+
+## Package Manager & Tooling
+- **Bun** - Package manager and runtime
+- **TypeScript** - Type-safe JavaScript
+- **ESLint** - Linting
+- **Prettier** - Code formatting
+- **Vitest** - Testing framework
+
+## Project Structure
+- `src/routes/` - TanStack Router file-based routes
+- `src/components/` - React components
+- `src/lib/` - Utility functions and auth configuration
+- `convex/` - Convex backend functions and schema
