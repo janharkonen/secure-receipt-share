@@ -1,4 +1,4 @@
-# secure-receipt-share
+# Jan Template App
 
 This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Start, Convex, and more.
 
@@ -44,7 +44,7 @@ Your app will connect to the Convex cloud backend automatically.
 ## Project Structure
 
 ```
-secure-receipt-share/
+Jan Template App/
 ├── apps/
 │   ├── web/         # Frontend application (React + TanStack Start)
 ├── packages/
