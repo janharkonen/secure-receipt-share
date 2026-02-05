@@ -1,8 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
-import { useQuery as useConvexQuery } from "convex/react";
 import { api } from "@secure-receipt-share/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -17,11 +16,6 @@ import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/myworkspaces")({
   component: WorkspacesPage,
-  beforeLoad: async ({ context }) => {
-    if (!context.isAuthenticated) {
-      throw redirect({ to: "/" });
-    }
-  },
 });
 
 function WorkspacesPage() {
@@ -57,15 +51,19 @@ function WorkspacesPage() {
           <CardContent>
             {workspaces1.isLoading ? (
               <p className="text-muted-foreground">Loading workspaces...</p>
+            ) : workspaces1.error ? (
+              <p className="text-red-500">Error: {workspaces1.error.message}</p>
             ) : workspaces1.data ? (
               <div className="space-y-2">
                 {workspaces1.data.map((workspace) => (
-                  <div
+                  <Link
                     className="flex items-center justify-between p-2 rounded-md bg-muted"
                     key={workspace._id}
+                    to="/myworkspaces/$workspaceId"
+                    params={{ workspaceId: workspace._id }}
                   >
                     {workspace.workspace_name}
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (

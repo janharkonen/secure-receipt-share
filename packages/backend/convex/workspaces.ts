@@ -3,19 +3,16 @@ import { query } from "./_generated/server";
 import { authComponent } from "./auth";
 
 export const getWorkspaces = query({
-  returns: v.union(
-    v.array(
-      v.object({
-        _id: v.string(),
-        workspace_name: v.string(),
-      }),
-    ),
-    v.null(),
+  returns: v.array(
+    v.object({
+      _id: v.string(),
+      workspace_name: v.string(),
+    }),
   ),
   handler: async (ctx) => {
     const authUser = await authComponent.safeGetAuthUser(ctx);
     if (!authUser) {
-      return null;
+      throw new Error("Not authenticated");
     }
     const email = authUser.email;
     const allWorkspaces = await ctx.db.query("workspaces").collect();
