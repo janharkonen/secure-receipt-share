@@ -1,9 +1,19 @@
-import { createFileRoute, useNavigate, useRouteContext } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  useRouteContext,
+} from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/")({
@@ -17,7 +27,7 @@ function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/myworkspaces" });
     }
   }, [isAuthenticated, navigate]);
 
@@ -26,7 +36,7 @@ function LoginPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        callbackURL: "/myworkspaces",
       });
     } catch (error) {
       toast.error("Failed to sign in with Google");
@@ -41,9 +51,7 @@ function LoginPage() {
           <CardTitle className="text-2xl font-bold tracking-tight">
             Welcome
           </CardTitle>
-          <CardDescription>
-            Sign in to your account to continue
-          </CardDescription>
+          <CardDescription>Sign in to your account to continue</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button

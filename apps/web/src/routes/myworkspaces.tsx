@@ -5,11 +5,17 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 
-export const Route = createFileRoute("/dashboard")({
-  component: DashboardPage,
+export const Route = createFileRoute("/myworkspaces")({
+  component: WorkspacesPage,
   beforeLoad: async ({ context }) => {
     if (!context.isAuthenticated) {
       throw redirect({ to: "/" });
@@ -17,7 +23,7 @@ export const Route = createFileRoute("/dashboard")({
   },
 });
 
-function DashboardPage() {
+function WorkspacesPage() {
   const navigate = useNavigate();
   const currentUser = useQuery(convexQuery(api.auth.getCurrentUser, {}));
 
@@ -36,7 +42,7 @@ function DashboardPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-8">
       <div className="container mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-white">My Workspaces</h1>
           <Button variant="outline" onClick={handleSignOut}>
             Sign Out
           </Button>
@@ -45,9 +51,7 @@ function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Welcome!</CardTitle>
-            <CardDescription>
-              You are signed in with Google
-            </CardDescription>
+            <CardDescription>You are signed in with Google</CardDescription>
           </CardHeader>
           <CardContent>
             {currentUser.isLoading ? (
@@ -55,10 +59,12 @@ function DashboardPage() {
             ) : currentUser.data ? (
               <div className="space-y-2">
                 <p>
-                  <span className="font-medium">Name:</span> {currentUser.data.name}
+                  <span className="font-medium">Name:</span>{" "}
+                  {currentUser.data.name}
                 </p>
                 <p>
-                  <span className="font-medium">Email:</span> {currentUser.data.email}
+                  <span className="font-medium">Email:</span>{" "}
+                  {currentUser.data.email}
                 </p>
               </div>
             ) : (
