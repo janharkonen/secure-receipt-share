@@ -1,4 +1,5 @@
 import { convexQuery } from "@convex-dev/react-query";
+import { useQuery as useConvexQuery } from "convex/react";
 import { api } from "@secure-receipt-share/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/myworkspaces")({
 
 function WorkspacesPage() {
   const navigate = useNavigate();
-  const currentUser = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+  const workspaces1 = useQuery(convexQuery(api.workspaces.getWorkspaces, {}));
 
   const handleSignOut = async () => {
     await authClient.signOut({
@@ -54,21 +55,21 @@ function WorkspacesPage() {
             <CardDescription>You are signed in with Google</CardDescription>
           </CardHeader>
           <CardContent>
-            {currentUser.isLoading ? (
-              <p className="text-muted-foreground">Loading user data...</p>
-            ) : currentUser.data ? (
+            {workspaces1.isLoading ? (
+              <p className="text-muted-foreground">Loading workspaces...</p>
+            ) : workspaces1.data ? (
               <div className="space-y-2">
-                <p>
-                  <span className="font-medium">Name:</span>{" "}
-                  {currentUser.data.name}
-                </p>
-                <p>
-                  <span className="font-medium">Email:</span>{" "}
-                  {currentUser.data.email}
-                </p>
+                {workspaces1.data.map((workspace) => (
+                  <div
+                    className="flex items-center justify-between p-2 rounded-md bg-muted"
+                    key={workspace._id}
+                  >
+                    {workspace.workspace_name}
+                  </div>
+                ))}
               </div>
             ) : (
-              <p className="text-muted-foreground">Unable to load user data</p>
+              <p className="text-muted-foreground">Unable to load workspaces</p>
             )}
           </CardContent>
         </Card>
