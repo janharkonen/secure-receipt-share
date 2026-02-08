@@ -38,49 +38,49 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <div className="hidden lg:flex lg:w-1/2 bg-blue-700 items-center justify-center p-12">
-        <div className="max-w-md text-white">
-          <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center mb-8">
-            <span className="text-3xl font-bold">SR</span>
+    <div className="flex min-h-screen bg-background">
+      <div className="hidden lg:flex lg:w-1/2 bg-card border-r border-border items-center justify-center p-12">
+        <div className="max-w-md text-foreground">
+          <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center mb-8">
+            <span className="text-3xl font-bold text-primary">SR</span>
           </div>
           <h2 className="text-4xl font-bold mb-4">Secure Receipt Share</h2>
-          <p className="text-blue-200 text-lg">
+          <p className="text-muted-foreground text-lg">
             Enterprise-grade receipt management platform trusted by
             professionals worldwide.
           </p>
-          <div className="mt-12 flex gap-8 text-sm text-blue-200">
+          <div className="mt-12 flex gap-8 text-sm text-muted-foreground">
             <div>
-              <div className="text-3xl font-bold text-white">10K+</div>
+              <div className="text-3xl font-bold text-foreground">10K+</div>
               <div>Active Users</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-white">99.9%</div>
+              <div className="text-3xl font-bold text-foreground">99.9%</div>
               <div>Uptime</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-white">256-bit</div>
+              <div className="text-3xl font-bold text-foreground">256-bit</div>
               <div>Encryption</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center bg-gray-50 px-8">
+      <div className="flex-1 flex items-center justify-center bg-background px-8">
         <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h1>
-          <p className="text-gray-500 mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Sign In</h1>
+          <p className="text-muted-foreground mb-8">
             Access your professional dashboard
           </p>
 
           <Button
             variant="outline"
-            className="w-full h-12 border-gray-300 hover:border-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+            className="w-full h-12 rounded-lg transition-all"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
           >
             {isLoading ? (
-              <span className="text-gray-500">Authenticating...</span>
+              <span className="text-muted-foreground">Authenticating...</span>
             ) : (
               <span className="flex items-center gap-3">
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@ function LoginPage() {
             )}
           </Button>
 
-          <p className="text-xs text-gray-400 text-center mt-8">
+          <p className="text-xs text-muted-foreground text-center mt-8">
             By signing in, you agree to our Terms of Service and Privacy Policy
           </p>
         </div>
