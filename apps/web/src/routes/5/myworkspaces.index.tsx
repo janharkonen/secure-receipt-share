@@ -5,6 +5,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/5/myworkspaces/")({
@@ -28,70 +29,73 @@ function WorkspacesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-teal-100">
-      <header className="bg-white/70 backdrop-blur border-b border-emerald-100 px-6 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🌿</span>
-            <h1 className="text-xl font-semibold text-emerald-900">
+    <div
+      className="min-h-screen bg-[#050505] px-6 py-12 text-[#f6f1e9]"
+      style={{
+        fontFamily: '"Bebas Neue", "Franklin Gothic Medium", sans-serif',
+      }}
+    >
+      <div className="mx-auto max-w-6xl space-y-10">
+        <header className="flex flex-col gap-6 border border-[#d1a679] bg-[#0c0c0c] p-8 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.5em] text-[#d1a679]">
+              Workspace Syndicate
+            </p>
+            <h1 className="mt-3 text-5xl uppercase text-[#f6f1e9]">
               My Workspaces
             </h1>
+            <p className="mt-2 text-sm uppercase tracking-[0.4em] text-[#d1a679]">
+              Select a vault for receipt dispatch.
+            </p>
           </div>
           <Button
-            variant="outline"
-            className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+            className="border border-[#d1a679] bg-[#f6f1e9] text-xs uppercase tracking-[0.4em] text-black hover:bg-[#d1a679]"
             onClick={handleSignOut}
           >
             Sign Out
           </Button>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-10">
-        <p className="text-emerald-600/70 mb-6">
-          Choose your workspace to continue
-        </p>
-
-        {workspaces1.isLoading ? (
-          <div className="text-center py-12">
-            <span className="text-3xl animate-pulse">🍃</span>
-            <p className="text-emerald-600 mt-2">Growing your workspaces...</p>
-          </div>
-        ) : workspaces1.error ? (
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-red-600">
-            Error: {workspaces1.error.message}
-          </div>
-        ) : workspaces1.data ? (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {workspaces1.data.map((workspace, index) => (
-              <Link
-                className="bg-white/80 backdrop-blur border border-emerald-100 rounded-2xl p-6 hover:shadow-lg hover:shadow-emerald-100 hover:border-emerald-200 transition-all group"
-                key={workspace._id}
-                to="/myworkspaces/$workspaceId"
-                params={{ workspaceId: workspace._id }}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-xl shadow-md">
-                    {["🌱", "🌿", "🍀", "🌳", "🌴"][index % 5]}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-emerald-900 group-hover:text-emerald-700 transition-colors">
-                      {workspace.workspace_name}
-                    </h3>
-                    <p className="text-sm text-emerald-600/60 mt-1">
-                      Click to explore
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-emerald-600/70">
-            No workspaces yet. Time to plant some seeds! 🌱
-          </div>
-        )}
-      </main>
+        <Card className="border border-[#d1a679] bg-[#0c0c0c] text-[#f6f1e9]">
+          <CardContent className="space-y-5 p-8">
+            <div className="flex items-center justify-between text-xs uppercase tracking-[0.5em] text-[#d1a679]">
+              <span>Signed in with Google</span>
+              <span className="border border-[#d1a679] px-3 py-1 text-[0.65rem]">
+                Active
+              </span>
+            </div>
+            {workspaces1.isLoading ? (
+              <p className="text-sm uppercase tracking-[0.3em] text-[#d1a679]">
+                Loading workspaces...
+              </p>
+            ) : workspaces1.error ? (
+              <p className="text-sm text-red-400">
+                Error: {workspaces1.error.message}
+              </p>
+            ) : workspaces1.data ? (
+              <div className="grid gap-4">
+                {workspaces1.data.map((workspace) => (
+                  <Link
+                    className="flex items-center justify-between border border-[#d1a679] bg-[#050505] px-6 py-4 text-2xl uppercase transition hover:-translate-y-1 hover:bg-[#f6f1e9] hover:text-black"
+                    key={workspace._id}
+                    to="/myworkspaces/$workspaceId"
+                    params={{ workspaceId: workspace._id }}
+                  >
+                    {workspace.workspace_name}
+                    <span className="text-xs uppercase tracking-[0.4em]">
+                      Enter →
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-[#d1a679]">
+                Unable to load workspaces
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/2/myworkspaces/")({
@@ -28,57 +29,71 @@ function WorkspacesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black relative">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,rgba(120,0,255,0.1),transparent_50%)]" />
-
-      <header className="relative z-10 border-b border-cyan-500/20 px-8 py-6">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
-            ▲ WORKSPACES
-          </h1>
+    <div
+      className="min-h-screen bg-[#0b0e12] px-6 py-10 text-white"
+      style={{
+        fontFamily: '"DM Serif Display", "Playfair Display", serif',
+      }}
+    >
+      <div className="mx-auto max-w-6xl space-y-8">
+        <header className="flex flex-col gap-5 rounded-[28px] border border-white/15 bg-white/5 p-8 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+              Workspace Gallery
+            </p>
+            <h1 className="mt-3 text-4xl">My Workspaces</h1>
+            <p className="mt-2 text-sm uppercase tracking-[0.3em] text-white/60">
+              Curated vaults for your receipts and collaborators.
+            </p>
+          </div>
           <Button
-            variant="outline"
-            className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400"
+            className="rounded-full bg-white text-xs uppercase tracking-[0.35em] text-black hover:bg-white/80"
             onClick={handleSignOut}
           >
-            DISCONNECT
+            Sign Out
           </Button>
-        </div>
-      </header>
+        </header>
 
-      <main className="relative z-10 max-w-4xl mx-auto px-8 py-12">
-        <div className="border border-cyan-500/20 rounded-xl bg-black/50 backdrop-blur p-6">
-          <p className="text-cyan-500/60 font-mono text-sm mb-6">
-            // select workspace to continue
-          </p>
-          {workspaces1.isLoading ? (
-            <p className="text-cyan-400 animate-pulse">⟳ LOADING...</p>
-          ) : workspaces1.error ? (
-            <p className="text-red-400">✗ ERROR: {workspaces1.error.message}</p>
-          ) : workspaces1.data ? (
-            <div className="space-y-3">
-              {workspaces1.data.map((workspace, index) => (
-                <Link
-                  className="block p-4 border border-purple-500/30 rounded-lg bg-purple-500/5 hover:bg-purple-500/10 hover:border-purple-400/50 transition-all group"
-                  key={workspace._id}
-                  to="/myworkspaces/$workspaceId"
-                  params={{ workspaceId: workspace._id }}
-                >
-                  <span className="text-cyan-400 font-mono mr-3">
-                    0{index + 1}
-                  </span>
-                  <span className="text-white group-hover:text-cyan-300 transition-colors">
-                    {workspace.workspace_name}
-                  </span>
-                  <span className="float-right text-purple-400">→</span>
-                </Link>
-              ))}
+        <Card className="rounded-[28px] border border-white/15 bg-white/5 text-white">
+          <CardContent className="space-y-5 p-8">
+            <div className="flex items-center justify-between text-xs uppercase tracking-[0.4em] text-white/60">
+              <span>Signed in with Google</span>
+              <span className="rounded-full border border-white/30 px-3 py-1 text-[0.65rem]">
+                Verified
+              </span>
             </div>
-          ) : (
-            <p className="text-cyan-500/60">NO DATA FOUND</p>
-          )}
-        </div>
-      </main>
+            {workspaces1.isLoading ? (
+              <p className="text-sm uppercase tracking-[0.3em] text-white/60">
+                Loading workspaces...
+              </p>
+            ) : workspaces1.error ? (
+              <p className="text-sm text-red-400">
+                Error: {workspaces1.error.message}
+              </p>
+            ) : workspaces1.data ? (
+              <div className="grid gap-4">
+                {workspaces1.data.map((workspace) => (
+                  <Link
+                    className="flex flex-col gap-2 rounded-[22px] border border-white/20 bg-white/5 px-6 py-5 text-white transition hover:-translate-y-1 hover:bg-white/10"
+                    key={workspace._id}
+                    to="/myworkspaces/$workspaceId"
+                    params={{ workspaceId: workspace._id }}
+                  >
+                    <span className="text-2xl">{workspace.workspace_name}</span>
+                    <span className="text-xs uppercase tracking-[0.3em] text-white/60">
+                      Enter workspace →
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-white/60">
+                Unable to load workspaces
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

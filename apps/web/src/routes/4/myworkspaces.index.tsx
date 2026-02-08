@@ -5,6 +5,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/4/myworkspaces/")({
@@ -28,89 +29,71 @@ function WorkspacesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">SR</span>
-            </div>
-            <span className="text-xl font-semibold text-gray-900">
-              Dashboard
-            </span>
+    <div
+      className="min-h-screen bg-[#07131a] px-6 py-12 text-[#d6f3ff]"
+      style={{
+        fontFamily: '"Rajdhani", "Segoe UI", sans-serif',
+      }}
+    >
+      <div className="mx-auto max-w-5xl space-y-10">
+        <header className="flex flex-col gap-6 rounded-[28px] border border-[#1f4452] bg-[#0a1b24] p-8 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-[#7bd0ff]">
+              Workspace Terminal
+            </p>
+            <h1 className="mt-3 text-4xl text-white">My Workspaces</h1>
+            <p className="mt-2 text-sm uppercase tracking-[0.3em] text-[#7bd0ff]">
+              Select a cockpit to inspect receipts.
+            </p>
           </div>
           <Button
-            variant="outline"
-            className="border-gray-300 text-gray-600"
+            className="rounded-full border border-[#1f4452] bg-[#7bd0ff] text-xs uppercase tracking-[0.35em] text-[#07131a] hover:bg-[#a7e3ff]"
             onClick={handleSignOut}
           >
             Sign Out
           </Button>
-        </div>
-      </nav>
+        </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Workspaces</h1>
-          <p className="text-gray-500">Select a workspace to view receipts</p>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-          {workspaces1.isLoading ? (
-            <div className="p-8 text-center text-gray-500">
-              Loading workspaces...
+        <Card className="rounded-[28px] border border-[#1f4452] bg-[#0a1b24] text-[#d6f3ff]">
+          <CardContent className="space-y-5 p-8">
+            <div className="flex items-center justify-between text-xs uppercase tracking-[0.4em] text-[#7bd0ff]">
+              <span>Signed in with Google</span>
+              <span className="rounded-full border border-[#1f4452] px-3 py-1 text-[0.65rem]">
+                Clear
+              </span>
             </div>
-          ) : workspaces1.error ? (
-            <div className="p-8 text-center text-red-500">
-              Error: {workspaces1.error.message}
-            </div>
-          ) : workspaces1.data ? (
-            <div className="divide-y divide-gray-100">
-              {workspaces1.data.map((workspace) => (
-                <Link
-                  className="flex items-center justify-between p-5 hover:bg-gray-50 transition-colors"
-                  key={workspace._id}
-                  to="/myworkspaces/$workspaceId"
-                  params={{ workspaceId: workspace._id }}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <span className="text-blue-700 font-semibold text-lg">
-                        {workspace.workspace_name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {workspace.workspace_name}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Click to view details
-                      </div>
-                    </div>
-                  </div>
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            {workspaces1.isLoading ? (
+              <p className="text-sm uppercase tracking-[0.3em] text-[#7bd0ff]">
+                Loading workspaces...
+              </p>
+            ) : workspaces1.error ? (
+              <p className="text-sm text-red-400">
+                Error: {workspaces1.error.message}
+              </p>
+            ) : workspaces1.data ? (
+              <div className="grid gap-4">
+                {workspaces1.data.map((workspace) => (
+                  <Link
+                    className="group flex items-center justify-between rounded-[22px] border border-[#1f4452] bg-[#0a1b24] px-6 py-5 text-white transition hover:-translate-y-1 hover:border-[#7bd0ff]"
+                    key={workspace._id}
+                    to="/myworkspaces/$workspaceId"
+                    params={{ workspaceId: workspace._id }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="p-8 text-center text-gray-500">
-              No workspaces found
-            </div>
-          )}
-        </div>
-      </main>
+                    <span className="text-xl">{workspace.workspace_name}</span>
+                    <span className="text-xs uppercase tracking-[0.3em] text-[#7bd0ff]">
+                      Launch →
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-[#7bd0ff]">
+                Unable to load workspaces
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
