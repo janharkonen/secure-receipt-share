@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@secure-receipt-share/backend/convex/_generated/api";
 import type { Id } from "@secure-receipt-share/backend/convex/_generated/dataModel";
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { Card } from "@/components/ui/card";
 
 export const Route = createFileRoute("/myworkspaces/$workspaceId/")({
   component: WorkspacesPage,
@@ -20,41 +19,61 @@ function WorkspacesPage() {
       workspaceId: workspaceId as Id<"workspaces">,
     }),
   );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-8">
-      <div className="container mx-auto max-w-4xl">
-        <h1 className="text-3xl font-bold text-white">
-          {isLoading
-            ? "Loading..."
-            : error
-              ? "Error: " + error.message
-              : workspaceName}
-        </h1>
-        <div className="grid grid-cols-1 gap-4">
-          {Object.entries(receiptsByCategoryObject ?? {}).map(
-            ([category, receipts]) => (
-              <div key={category}>
-                <h2 className="text-xl font-bold text-white">{category}</h2>
-                <div className="grid grid-cols-1 mt-4 gap-4">
-                  {receipts.map((receipt) => (
-                    <Card key={receipt._id} className="py-3 px-4">
-                      <div className="flex items-center justify-start gap-4">
-                        <span className="font-medium">{receipt.name}</span>
-                        <span className="text-sm text-gray-500">
-                          Price: {receipt.price}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          ALV: {receipt.alv}
-                        </span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            ),
-          )}
+    <div className="min-h-screen bg-background">
+      <nav className="bg-card border-b border-border px-6 py-4">
+        <div className="max-w-6xl mx-auto flex items-center gap-3">
+          <span className="text-xl font-semibold text-foreground">
+            {isLoading ? "Loading..." : error ? "Error" : workspaceName}
+          </span>
         </div>
-      </div>
+      </nav>
+
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        {Object.entries(receiptsByCategoryObject ?? {}).map(
+          ([category, receipts]) => (
+            <section key={category} className="mb-8">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 bg-primary rounded-full" />
+                {category}
+              </h2>
+              <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-muted/50 border-b border-border">
+                    <tr>
+                      <th className="text-left px-5 py-3 text-sm font-medium text-muted-foreground">
+                        Name
+                      </th>
+                      <th className="text-right px-5 py-3 text-sm font-medium text-muted-foreground">
+                        Price
+                      </th>
+                      <th className="text-right px-5 py-3 text-sm font-medium text-muted-foreground">
+                        ALV
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {receipts.map((receipt) => (
+                      <tr key={receipt._id} className="hover:bg-muted/30">
+                        <td className="px-5 py-4 text-foreground">
+                          {receipt.name}
+                        </td>
+                        <td className="px-5 py-4 text-right text-muted-foreground">
+                          {receipt.price}
+                        </td>
+                        <td className="px-5 py-4 text-right text-muted-foreground">
+                          {receipt.alv}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ),
+        )}
+      </main>
     </div>
   );
 }
