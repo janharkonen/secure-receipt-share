@@ -9,26 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as MyworkspacesRouteImport } from './routes/myworkspaces'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MyworkspacesIndexRouteImport } from './routes/myworkspaces.index'
 import { Route as MyworkspacesWorkspaceIdRouteImport } from './routes/myworkspaces.$workspaceId'
+import { Route as MyworkspacesWorkspaceIdIndexRouteImport } from './routes/myworkspaces.$workspaceId.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
-const MyworkspacesRoute = MyworkspacesRouteImport.update({
-  id: '/myworkspaces',
-  path: '/myworkspaces',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MyworkspacesWorkspaceIdRoute = MyworkspacesWorkspaceIdRouteImport.update({
-  id: '/$workspaceId',
-  path: '/$workspaceId',
-  getParentRoute: () => MyworkspacesRoute,
+const MyworkspacesIndexRoute = MyworkspacesIndexRouteImport.update({
+  id: '/myworkspaces/',
+  path: '/myworkspaces/',
+  getParentRoute: () => rootRouteImport,
 } as any)
+const MyworkspacesWorkspaceIdRoute = MyworkspacesWorkspaceIdRouteImport.update({
+  id: '/myworkspaces/$workspaceId',
+  path: '/myworkspaces/$workspaceId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyworkspacesWorkspaceIdIndexRoute =
+  MyworkspacesWorkspaceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => MyworkspacesWorkspaceIdRoute,
+  } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -37,55 +44,53 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/myworkspaces': typeof MyworkspacesRouteWithChildren
-  '/myworkspaces/$workspaceId': typeof MyworkspacesWorkspaceIdRoute
+  '/myworkspaces/$workspaceId': typeof MyworkspacesWorkspaceIdRouteWithChildren
+  '/myworkspaces/': typeof MyworkspacesIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/myworkspaces/$workspaceId/': typeof MyworkspacesWorkspaceIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/myworkspaces': typeof MyworkspacesRouteWithChildren
-  '/myworkspaces/$workspaceId': typeof MyworkspacesWorkspaceIdRoute
+  '/myworkspaces': typeof MyworkspacesIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/myworkspaces/$workspaceId': typeof MyworkspacesWorkspaceIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/myworkspaces': typeof MyworkspacesRouteWithChildren
-  '/myworkspaces/$workspaceId': typeof MyworkspacesWorkspaceIdRoute
+  '/myworkspaces/$workspaceId': typeof MyworkspacesWorkspaceIdRouteWithChildren
+  '/myworkspaces/': typeof MyworkspacesIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/myworkspaces/$workspaceId/': typeof MyworkspacesWorkspaceIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/myworkspaces'
     | '/myworkspaces/$workspaceId'
+    | '/myworkspaces/'
     | '/api/auth/$'
+    | '/myworkspaces/$workspaceId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/myworkspaces' | '/myworkspaces/$workspaceId' | '/api/auth/$'
+  to: '/' | '/myworkspaces' | '/api/auth/$' | '/myworkspaces/$workspaceId'
   id:
     | '__root__'
     | '/'
-    | '/myworkspaces'
     | '/myworkspaces/$workspaceId'
+    | '/myworkspaces/'
     | '/api/auth/$'
+    | '/myworkspaces/$workspaceId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  MyworkspacesRoute: typeof MyworkspacesRouteWithChildren
+  MyworkspacesWorkspaceIdRoute: typeof MyworkspacesWorkspaceIdRouteWithChildren
+  MyworkspacesIndexRoute: typeof MyworkspacesIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/myworkspaces': {
-      id: '/myworkspaces'
-      path: '/myworkspaces'
-      fullPath: '/myworkspaces'
-      preLoaderRoute: typeof MyworkspacesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -93,12 +98,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/myworkspaces/': {
+      id: '/myworkspaces/'
+      path: '/myworkspaces'
+      fullPath: '/myworkspaces/'
+      preLoaderRoute: typeof MyworkspacesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/myworkspaces/$workspaceId': {
       id: '/myworkspaces/$workspaceId'
-      path: '/$workspaceId'
+      path: '/myworkspaces/$workspaceId'
       fullPath: '/myworkspaces/$workspaceId'
       preLoaderRoute: typeof MyworkspacesWorkspaceIdRouteImport
-      parentRoute: typeof MyworkspacesRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/myworkspaces/$workspaceId/': {
+      id: '/myworkspaces/$workspaceId/'
+      path: '/'
+      fullPath: '/myworkspaces/$workspaceId/'
+      preLoaderRoute: typeof MyworkspacesWorkspaceIdIndexRouteImport
+      parentRoute: typeof MyworkspacesWorkspaceIdRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -110,21 +129,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface MyworkspacesRouteChildren {
-  MyworkspacesWorkspaceIdRoute: typeof MyworkspacesWorkspaceIdRoute
+interface MyworkspacesWorkspaceIdRouteChildren {
+  MyworkspacesWorkspaceIdIndexRoute: typeof MyworkspacesWorkspaceIdIndexRoute
 }
 
-const MyworkspacesRouteChildren: MyworkspacesRouteChildren = {
-  MyworkspacesWorkspaceIdRoute: MyworkspacesWorkspaceIdRoute,
-}
+const MyworkspacesWorkspaceIdRouteChildren: MyworkspacesWorkspaceIdRouteChildren =
+  {
+    MyworkspacesWorkspaceIdIndexRoute: MyworkspacesWorkspaceIdIndexRoute,
+  }
 
-const MyworkspacesRouteWithChildren = MyworkspacesRoute._addFileChildren(
-  MyworkspacesRouteChildren,
-)
+const MyworkspacesWorkspaceIdRouteWithChildren =
+  MyworkspacesWorkspaceIdRoute._addFileChildren(
+    MyworkspacesWorkspaceIdRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  MyworkspacesRoute: MyworkspacesRouteWithChildren,
+  MyworkspacesWorkspaceIdRoute: MyworkspacesWorkspaceIdRouteWithChildren,
+  MyworkspacesIndexRoute: MyworkspacesIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

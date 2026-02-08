@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 
-export const Route = createFileRoute("/myworkspaces")({
+export const Route = createFileRoute("/myworkspaces/")({
   component: WorkspacesPage,
+  ssr: true,
 });
 
 function WorkspacesPage() {
