@@ -41,9 +41,11 @@ function LoginPage() {
     <div className="flex min-h-screen bg-background">
       <div className="hidden lg:flex lg:w-1/2 bg-card border-r border-border items-center justify-center p-12">
         <div className="max-w-md text-foreground">
-          <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center mb-8">
-            <span className="text-3xl font-bold text-primary">SR</span>
-          </div>
+          <img
+            src="/receipt-with-lock-icon-nobg.png"
+            alt="Secure receipt"
+            className="w-24 h-24 object-contain mb-8"
+          />
           <h2 className="text-4xl font-bold mb-4">Secure Receipt Share</h2>
           <p className="text-muted-foreground text-lg">
             Enterprise-grade receipt management platform trusted by
