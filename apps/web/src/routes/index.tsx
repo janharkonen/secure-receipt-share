@@ -7,13 +7,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/")({
@@ -45,47 +38,51 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight">
-            Welcome
-          </CardTitle>
-          <CardDescription>Sign in to your account to continue</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <div className="flex min-h-screen">
+      <div className="hidden lg:flex lg:w-1/2 bg-blue-700 items-center justify-center p-12">
+        <div className="max-w-md text-white">
+          <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center mb-8">
+            <span className="text-3xl font-bold">SR</span>
+          </div>
+          <h2 className="text-4xl font-bold mb-4">Secure Receipt Share</h2>
+          <p className="text-blue-200 text-lg">
+            Enterprise-grade receipt management platform trusted by
+            professionals worldwide.
+          </p>
+          <div className="mt-12 flex gap-8 text-sm text-blue-200">
+            <div>
+              <div className="text-3xl font-bold text-white">10K+</div>
+              <div>Active Users</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-white">99.9%</div>
+              <div>Uptime</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-white">256-bit</div>
+              <div>Encryption</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center bg-gray-50 px-8">
+        <div className="w-full max-w-md">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h1>
+          <p className="text-gray-500 mb-8">
+            Access your professional dashboard
+          </p>
+
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full h-12 border-gray-300 hover:border-blue-500 hover:bg-blue-50 rounded-lg transition-all"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
           >
             {isLoading ? (
-              <span className="flex items-center gap-2">
-                <svg
-                  className="h-4 w-4 animate-spin"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Signing in...
-              </span>
+              <span className="text-gray-500">Authenticating...</span>
             ) : (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-3">
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
@@ -108,8 +105,12 @@ function LoginPage() {
               </span>
             )}
           </Button>
-        </CardContent>
-      </Card>
+
+          <p className="text-xs text-gray-400 text-center mt-8">
+            By signing in, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

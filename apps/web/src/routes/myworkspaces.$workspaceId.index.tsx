@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@secure-receipt-share/backend/convex/_generated/api";
 import type { Id } from "@secure-receipt-share/backend/convex/_generated/dataModel";
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { Card } from "@/components/ui/card";
 
 export const Route = createFileRoute("/myworkspaces/$workspaceId/")({
   component: WorkspacesPage,
@@ -20,41 +19,64 @@ function WorkspacesPage() {
       workspaceId: workspaceId as Id<"workspaces">,
     }),
   );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-8">
-      <div className="container mx-auto max-w-4xl">
-        <h1 className="text-3xl font-bold text-white">
-          {isLoading
-            ? "Loading..."
-            : error
-              ? "Error: " + error.message
-              : workspaceName}
-        </h1>
-        <div className="grid grid-cols-1 gap-4">
-          {Object.entries(receiptsByCategoryObject ?? {}).map(
-            ([category, receipts]) => (
-              <div key={category}>
-                <h2 className="text-xl font-bold text-white">{category}</h2>
-                <div className="grid grid-cols-1 mt-4 gap-4">
-                  {receipts.map((receipt) => (
-                    <Card key={receipt._id} className="py-3 px-4">
-                      <div className="flex items-center justify-start gap-4">
-                        <span className="font-medium">{receipt.name}</span>
-                        <span className="text-sm text-gray-500">
-                          Price: {receipt.price}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          ALV: {receipt.alv}
-                        </span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            ),
-          )}
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="max-w-6xl mx-auto flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold">SR</span>
+          </div>
+          <span className="text-xl font-semibold text-gray-900">
+            {isLoading ? "Loading..." : error ? "Error" : workspaceName}
+          </span>
         </div>
-      </div>
+      </nav>
+
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        {Object.entries(receiptsByCategoryObject ?? {}).map(
+          ([category, receipts]) => (
+            <section key={category} className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-700 rounded-full" />
+                {category}
+              </h2>
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="text-left px-5 py-3 text-sm font-medium text-gray-500">
+                        Name
+                      </th>
+                      <th className="text-right px-5 py-3 text-sm font-medium text-gray-500">
+                        Price
+                      </th>
+                      <th className="text-right px-5 py-3 text-sm font-medium text-gray-500">
+                        ALV
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {receipts.map((receipt) => (
+                      <tr key={receipt._id} className="hover:bg-gray-50">
+                        <td className="px-5 py-4 text-gray-900">
+                          {receipt.name}
+                        </td>
+                        <td className="px-5 py-4 text-right text-gray-600">
+                          {receipt.price}
+                        </td>
+                        <td className="px-5 py-4 text-right text-gray-600">
+                          {receipt.alv}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ),
+        )}
+      </main>
     </div>
   );
 }
