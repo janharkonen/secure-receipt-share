@@ -27,9 +27,29 @@ export const getMyWorkspaces = query({
   },
 });
 
+type ReceiptsCategory = {
+  _id: string;
+  name: string;
+  price: number;
+  alv: number;
+};
+
+type ReceiptsByCategoryObject = Record<string, ReceiptsCategory[]>;
+
 export const getWorkspaceData = query({
   returns: v.object({
     workspaceName: v.string(),
+    receiptsByCategoryObject: v.record(
+      v.string(),
+      v.array(
+        v.object({
+          _id: v.string(),
+          name: v.string(),
+          price: v.number(),
+          alv: v.number(),
+        }),
+      ),
+    ),
   }),
   args: {
     workspaceId: v.id("workspaces"),
@@ -46,13 +66,29 @@ export const getWorkspaceData = query({
       throw new Error("Not authorized");
     }
     // Actual function logic
+    // Fetch data
     const workspaceName = workspace?.workspace_name ?? "";
     const receipts = await ctx.db
       .query("receipts")
-      .get((q) => q.eq(q.field("workspace_id"), args.workspaceId))
+      .filter((q) => q.eq(q.field("workspace_id"), args.workspaceId))
       .collect();
+
+    // Process data
+    const receiptsByCategoryObject: ReceiptsByCategoryObject = {};
+    receipts.forEach((receipt) => {
+      if (!receiptsByCategoryObject[receipt.category]) {
+        receiptsByCategoryObject[receipt.category] = [];
+      }
+      receiptsByCategoryObject[receipt.category].push({
+        _id: receipt._id.toString(),
+        name: receipt.name,
+        price: receipt.price,
+        alv: receipt.alv,
+      });
+    });
     return {
       workspaceName,
+      receiptsByCategoryObject,
     };
   },
 });
