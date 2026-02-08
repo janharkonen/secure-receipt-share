@@ -11,9 +11,29 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MyworkspacesIndexRouteImport } from './routes/myworkspaces.index'
+import { Route as R5IndexRouteImport } from './routes/5/index'
+import { Route as R4IndexRouteImport } from './routes/4/index'
+import { Route as R3IndexRouteImport } from './routes/3/index'
+import { Route as R2IndexRouteImport } from './routes/2/index'
+import { Route as R1IndexRouteImport } from './routes/1/index'
 import { Route as MyworkspacesWorkspaceIdRouteImport } from './routes/myworkspaces.$workspaceId'
 import { Route as MyworkspacesWorkspaceIdIndexRouteImport } from './routes/myworkspaces.$workspaceId.index'
+import { Route as R5MyworkspacesIndexRouteImport } from './routes/5/myworkspaces.index'
+import { Route as R4MyworkspacesIndexRouteImport } from './routes/4/myworkspaces.index'
+import { Route as R3MyworkspacesIndexRouteImport } from './routes/3/myworkspaces.index'
+import { Route as R2MyworkspacesIndexRouteImport } from './routes/2/myworkspaces.index'
+import { Route as R1MyworkspacesIndexRouteImport } from './routes/1/myworkspaces.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as R5MyworkspacesWorkspaceIdRouteImport } from './routes/5/myworkspaces.$workspaceId'
+import { Route as R4MyworkspacesWorkspaceIdRouteImport } from './routes/4/myworkspaces.$workspaceId'
+import { Route as R3MyworkspacesWorkspaceIdRouteImport } from './routes/3/myworkspaces.$workspaceId'
+import { Route as R2MyworkspacesWorkspaceIdRouteImport } from './routes/2/myworkspaces.$workspaceId'
+import { Route as R1MyworkspacesWorkspaceIdRouteImport } from './routes/1/myworkspaces.$workspaceId'
+import { Route as R5MyworkspacesWorkspaceIdIndexRouteImport } from './routes/5/myworkspaces.$workspaceId.index'
+import { Route as R4MyworkspacesWorkspaceIdIndexRouteImport } from './routes/4/myworkspaces.$workspaceId.index'
+import { Route as R3MyworkspacesWorkspaceIdIndexRouteImport } from './routes/3/myworkspaces.$workspaceId.index'
+import { Route as R2MyworkspacesWorkspaceIdIndexRouteImport } from './routes/2/myworkspaces.$workspaceId.index'
+import { Route as R1MyworkspacesWorkspaceIdIndexRouteImport } from './routes/1/myworkspaces.$workspaceId.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,6 +43,31 @@ const IndexRoute = IndexRouteImport.update({
 const MyworkspacesIndexRoute = MyworkspacesIndexRouteImport.update({
   id: '/myworkspaces/',
   path: '/myworkspaces/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R5IndexRoute = R5IndexRouteImport.update({
+  id: '/5/',
+  path: '/5/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R4IndexRoute = R4IndexRouteImport.update({
+  id: '/4/',
+  path: '/4/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R3IndexRoute = R3IndexRouteImport.update({
+  id: '/3/',
+  path: '/3/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R2IndexRoute = R2IndexRouteImport.update({
+  id: '/2/',
+  path: '/2/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R1IndexRoute = R1IndexRouteImport.update({
+  id: '/1/',
+  path: '/1/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MyworkspacesWorkspaceIdRoute = MyworkspacesWorkspaceIdRouteImport.update({
@@ -36,57 +81,271 @@ const MyworkspacesWorkspaceIdIndexRoute =
     path: '/',
     getParentRoute: () => MyworkspacesWorkspaceIdRoute,
   } as any)
+const R5MyworkspacesIndexRoute = R5MyworkspacesIndexRouteImport.update({
+  id: '/5/myworkspaces/',
+  path: '/5/myworkspaces/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R4MyworkspacesIndexRoute = R4MyworkspacesIndexRouteImport.update({
+  id: '/4/myworkspaces/',
+  path: '/4/myworkspaces/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R3MyworkspacesIndexRoute = R3MyworkspacesIndexRouteImport.update({
+  id: '/3/myworkspaces/',
+  path: '/3/myworkspaces/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R2MyworkspacesIndexRoute = R2MyworkspacesIndexRouteImport.update({
+  id: '/2/myworkspaces/',
+  path: '/2/myworkspaces/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R1MyworkspacesIndexRoute = R1MyworkspacesIndexRouteImport.update({
+  id: '/1/myworkspaces/',
+  path: '/1/myworkspaces/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const R5MyworkspacesWorkspaceIdRoute =
+  R5MyworkspacesWorkspaceIdRouteImport.update({
+    id: '/5/myworkspaces/$workspaceId',
+    path: '/5/myworkspaces/$workspaceId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const R4MyworkspacesWorkspaceIdRoute =
+  R4MyworkspacesWorkspaceIdRouteImport.update({
+    id: '/4/myworkspaces/$workspaceId',
+    path: '/4/myworkspaces/$workspaceId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const R3MyworkspacesWorkspaceIdRoute =
+  R3MyworkspacesWorkspaceIdRouteImport.update({
+    id: '/3/myworkspaces/$workspaceId',
+    path: '/3/myworkspaces/$workspaceId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const R2MyworkspacesWorkspaceIdRoute =
+  R2MyworkspacesWorkspaceIdRouteImport.update({
+    id: '/2/myworkspaces/$workspaceId',
+    path: '/2/myworkspaces/$workspaceId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const R1MyworkspacesWorkspaceIdRoute =
+  R1MyworkspacesWorkspaceIdRouteImport.update({
+    id: '/1/myworkspaces/$workspaceId',
+    path: '/1/myworkspaces/$workspaceId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const R5MyworkspacesWorkspaceIdIndexRoute =
+  R5MyworkspacesWorkspaceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => R5MyworkspacesWorkspaceIdRoute,
+  } as any)
+const R4MyworkspacesWorkspaceIdIndexRoute =
+  R4MyworkspacesWorkspaceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => R4MyworkspacesWorkspaceIdRoute,
+  } as any)
+const R3MyworkspacesWorkspaceIdIndexRoute =
+  R3MyworkspacesWorkspaceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => R3MyworkspacesWorkspaceIdRoute,
+  } as any)
+const R2MyworkspacesWorkspaceIdIndexRoute =
+  R2MyworkspacesWorkspaceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => R2MyworkspacesWorkspaceIdRoute,
+  } as any)
+const R1MyworkspacesWorkspaceIdIndexRoute =
+  R1MyworkspacesWorkspaceIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => R1MyworkspacesWorkspaceIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/myworkspaces/$workspaceId': typeof MyworkspacesWorkspaceIdRouteWithChildren
+  '/1/': typeof R1IndexRoute
+  '/2/': typeof R2IndexRoute
+  '/3/': typeof R3IndexRoute
+  '/4/': typeof R4IndexRoute
+  '/5/': typeof R5IndexRoute
   '/myworkspaces/': typeof MyworkspacesIndexRoute
+  '/1/myworkspaces/$workspaceId': typeof R1MyworkspacesWorkspaceIdRouteWithChildren
+  '/2/myworkspaces/$workspaceId': typeof R2MyworkspacesWorkspaceIdRouteWithChildren
+  '/3/myworkspaces/$workspaceId': typeof R3MyworkspacesWorkspaceIdRouteWithChildren
+  '/4/myworkspaces/$workspaceId': typeof R4MyworkspacesWorkspaceIdRouteWithChildren
+  '/5/myworkspaces/$workspaceId': typeof R5MyworkspacesWorkspaceIdRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/1/myworkspaces/': typeof R1MyworkspacesIndexRoute
+  '/2/myworkspaces/': typeof R2MyworkspacesIndexRoute
+  '/3/myworkspaces/': typeof R3MyworkspacesIndexRoute
+  '/4/myworkspaces/': typeof R4MyworkspacesIndexRoute
+  '/5/myworkspaces/': typeof R5MyworkspacesIndexRoute
   '/myworkspaces/$workspaceId/': typeof MyworkspacesWorkspaceIdIndexRoute
+  '/1/myworkspaces/$workspaceId/': typeof R1MyworkspacesWorkspaceIdIndexRoute
+  '/2/myworkspaces/$workspaceId/': typeof R2MyworkspacesWorkspaceIdIndexRoute
+  '/3/myworkspaces/$workspaceId/': typeof R3MyworkspacesWorkspaceIdIndexRoute
+  '/4/myworkspaces/$workspaceId/': typeof R4MyworkspacesWorkspaceIdIndexRoute
+  '/5/myworkspaces/$workspaceId/': typeof R5MyworkspacesWorkspaceIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/1': typeof R1IndexRoute
+  '/2': typeof R2IndexRoute
+  '/3': typeof R3IndexRoute
+  '/4': typeof R4IndexRoute
+  '/5': typeof R5IndexRoute
   '/myworkspaces': typeof MyworkspacesIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/1/myworkspaces': typeof R1MyworkspacesIndexRoute
+  '/2/myworkspaces': typeof R2MyworkspacesIndexRoute
+  '/3/myworkspaces': typeof R3MyworkspacesIndexRoute
+  '/4/myworkspaces': typeof R4MyworkspacesIndexRoute
+  '/5/myworkspaces': typeof R5MyworkspacesIndexRoute
   '/myworkspaces/$workspaceId': typeof MyworkspacesWorkspaceIdIndexRoute
+  '/1/myworkspaces/$workspaceId': typeof R1MyworkspacesWorkspaceIdIndexRoute
+  '/2/myworkspaces/$workspaceId': typeof R2MyworkspacesWorkspaceIdIndexRoute
+  '/3/myworkspaces/$workspaceId': typeof R3MyworkspacesWorkspaceIdIndexRoute
+  '/4/myworkspaces/$workspaceId': typeof R4MyworkspacesWorkspaceIdIndexRoute
+  '/5/myworkspaces/$workspaceId': typeof R5MyworkspacesWorkspaceIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/myworkspaces/$workspaceId': typeof MyworkspacesWorkspaceIdRouteWithChildren
+  '/1/': typeof R1IndexRoute
+  '/2/': typeof R2IndexRoute
+  '/3/': typeof R3IndexRoute
+  '/4/': typeof R4IndexRoute
+  '/5/': typeof R5IndexRoute
   '/myworkspaces/': typeof MyworkspacesIndexRoute
+  '/1/myworkspaces/$workspaceId': typeof R1MyworkspacesWorkspaceIdRouteWithChildren
+  '/2/myworkspaces/$workspaceId': typeof R2MyworkspacesWorkspaceIdRouteWithChildren
+  '/3/myworkspaces/$workspaceId': typeof R3MyworkspacesWorkspaceIdRouteWithChildren
+  '/4/myworkspaces/$workspaceId': typeof R4MyworkspacesWorkspaceIdRouteWithChildren
+  '/5/myworkspaces/$workspaceId': typeof R5MyworkspacesWorkspaceIdRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/1/myworkspaces/': typeof R1MyworkspacesIndexRoute
+  '/2/myworkspaces/': typeof R2MyworkspacesIndexRoute
+  '/3/myworkspaces/': typeof R3MyworkspacesIndexRoute
+  '/4/myworkspaces/': typeof R4MyworkspacesIndexRoute
+  '/5/myworkspaces/': typeof R5MyworkspacesIndexRoute
   '/myworkspaces/$workspaceId/': typeof MyworkspacesWorkspaceIdIndexRoute
+  '/1/myworkspaces/$workspaceId/': typeof R1MyworkspacesWorkspaceIdIndexRoute
+  '/2/myworkspaces/$workspaceId/': typeof R2MyworkspacesWorkspaceIdIndexRoute
+  '/3/myworkspaces/$workspaceId/': typeof R3MyworkspacesWorkspaceIdIndexRoute
+  '/4/myworkspaces/$workspaceId/': typeof R4MyworkspacesWorkspaceIdIndexRoute
+  '/5/myworkspaces/$workspaceId/': typeof R5MyworkspacesWorkspaceIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/myworkspaces/$workspaceId'
+    | '/1/'
+    | '/2/'
+    | '/3/'
+    | '/4/'
+    | '/5/'
     | '/myworkspaces/'
+    | '/1/myworkspaces/$workspaceId'
+    | '/2/myworkspaces/$workspaceId'
+    | '/3/myworkspaces/$workspaceId'
+    | '/4/myworkspaces/$workspaceId'
+    | '/5/myworkspaces/$workspaceId'
     | '/api/auth/$'
+    | '/1/myworkspaces/'
+    | '/2/myworkspaces/'
+    | '/3/myworkspaces/'
+    | '/4/myworkspaces/'
+    | '/5/myworkspaces/'
     | '/myworkspaces/$workspaceId/'
+    | '/1/myworkspaces/$workspaceId/'
+    | '/2/myworkspaces/$workspaceId/'
+    | '/3/myworkspaces/$workspaceId/'
+    | '/4/myworkspaces/$workspaceId/'
+    | '/5/myworkspaces/$workspaceId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/myworkspaces' | '/api/auth/$' | '/myworkspaces/$workspaceId'
+  to:
+    | '/'
+    | '/1'
+    | '/2'
+    | '/3'
+    | '/4'
+    | '/5'
+    | '/myworkspaces'
+    | '/api/auth/$'
+    | '/1/myworkspaces'
+    | '/2/myworkspaces'
+    | '/3/myworkspaces'
+    | '/4/myworkspaces'
+    | '/5/myworkspaces'
+    | '/myworkspaces/$workspaceId'
+    | '/1/myworkspaces/$workspaceId'
+    | '/2/myworkspaces/$workspaceId'
+    | '/3/myworkspaces/$workspaceId'
+    | '/4/myworkspaces/$workspaceId'
+    | '/5/myworkspaces/$workspaceId'
   id:
     | '__root__'
     | '/'
     | '/myworkspaces/$workspaceId'
+    | '/1/'
+    | '/2/'
+    | '/3/'
+    | '/4/'
+    | '/5/'
     | '/myworkspaces/'
+    | '/1/myworkspaces/$workspaceId'
+    | '/2/myworkspaces/$workspaceId'
+    | '/3/myworkspaces/$workspaceId'
+    | '/4/myworkspaces/$workspaceId'
+    | '/5/myworkspaces/$workspaceId'
     | '/api/auth/$'
+    | '/1/myworkspaces/'
+    | '/2/myworkspaces/'
+    | '/3/myworkspaces/'
+    | '/4/myworkspaces/'
+    | '/5/myworkspaces/'
     | '/myworkspaces/$workspaceId/'
+    | '/1/myworkspaces/$workspaceId/'
+    | '/2/myworkspaces/$workspaceId/'
+    | '/3/myworkspaces/$workspaceId/'
+    | '/4/myworkspaces/$workspaceId/'
+    | '/5/myworkspaces/$workspaceId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MyworkspacesWorkspaceIdRoute: typeof MyworkspacesWorkspaceIdRouteWithChildren
+  R1IndexRoute: typeof R1IndexRoute
+  R2IndexRoute: typeof R2IndexRoute
+  R3IndexRoute: typeof R3IndexRoute
+  R4IndexRoute: typeof R4IndexRoute
+  R5IndexRoute: typeof R5IndexRoute
   MyworkspacesIndexRoute: typeof MyworkspacesIndexRoute
+  R1MyworkspacesWorkspaceIdRoute: typeof R1MyworkspacesWorkspaceIdRouteWithChildren
+  R2MyworkspacesWorkspaceIdRoute: typeof R2MyworkspacesWorkspaceIdRouteWithChildren
+  R3MyworkspacesWorkspaceIdRoute: typeof R3MyworkspacesWorkspaceIdRouteWithChildren
+  R4MyworkspacesWorkspaceIdRoute: typeof R4MyworkspacesWorkspaceIdRouteWithChildren
+  R5MyworkspacesWorkspaceIdRoute: typeof R5MyworkspacesWorkspaceIdRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  R1MyworkspacesIndexRoute: typeof R1MyworkspacesIndexRoute
+  R2MyworkspacesIndexRoute: typeof R2MyworkspacesIndexRoute
+  R3MyworkspacesIndexRoute: typeof R3MyworkspacesIndexRoute
+  R4MyworkspacesIndexRoute: typeof R4MyworkspacesIndexRoute
+  R5MyworkspacesIndexRoute: typeof R5MyworkspacesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -105,6 +364,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyworkspacesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/5/': {
+      id: '/5/'
+      path: '/5'
+      fullPath: '/5/'
+      preLoaderRoute: typeof R5IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/4/': {
+      id: '/4/'
+      path: '/4'
+      fullPath: '/4/'
+      preLoaderRoute: typeof R4IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/3/': {
+      id: '/3/'
+      path: '/3'
+      fullPath: '/3/'
+      preLoaderRoute: typeof R3IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/2/': {
+      id: '/2/'
+      path: '/2'
+      fullPath: '/2/'
+      preLoaderRoute: typeof R2IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/1/': {
+      id: '/1/'
+      path: '/1'
+      fullPath: '/1/'
+      preLoaderRoute: typeof R1IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/myworkspaces/$workspaceId': {
       id: '/myworkspaces/$workspaceId'
       path: '/myworkspaces/$workspaceId'
@@ -119,12 +413,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyworkspacesWorkspaceIdIndexRouteImport
       parentRoute: typeof MyworkspacesWorkspaceIdRoute
     }
+    '/5/myworkspaces/': {
+      id: '/5/myworkspaces/'
+      path: '/5/myworkspaces'
+      fullPath: '/5/myworkspaces/'
+      preLoaderRoute: typeof R5MyworkspacesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/4/myworkspaces/': {
+      id: '/4/myworkspaces/'
+      path: '/4/myworkspaces'
+      fullPath: '/4/myworkspaces/'
+      preLoaderRoute: typeof R4MyworkspacesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/3/myworkspaces/': {
+      id: '/3/myworkspaces/'
+      path: '/3/myworkspaces'
+      fullPath: '/3/myworkspaces/'
+      preLoaderRoute: typeof R3MyworkspacesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/2/myworkspaces/': {
+      id: '/2/myworkspaces/'
+      path: '/2/myworkspaces'
+      fullPath: '/2/myworkspaces/'
+      preLoaderRoute: typeof R2MyworkspacesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/1/myworkspaces/': {
+      id: '/1/myworkspaces/'
+      path: '/1/myworkspaces'
+      fullPath: '/1/myworkspaces/'
+      preLoaderRoute: typeof R1MyworkspacesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/5/myworkspaces/$workspaceId': {
+      id: '/5/myworkspaces/$workspaceId'
+      path: '/5/myworkspaces/$workspaceId'
+      fullPath: '/5/myworkspaces/$workspaceId'
+      preLoaderRoute: typeof R5MyworkspacesWorkspaceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/4/myworkspaces/$workspaceId': {
+      id: '/4/myworkspaces/$workspaceId'
+      path: '/4/myworkspaces/$workspaceId'
+      fullPath: '/4/myworkspaces/$workspaceId'
+      preLoaderRoute: typeof R4MyworkspacesWorkspaceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/3/myworkspaces/$workspaceId': {
+      id: '/3/myworkspaces/$workspaceId'
+      path: '/3/myworkspaces/$workspaceId'
+      fullPath: '/3/myworkspaces/$workspaceId'
+      preLoaderRoute: typeof R3MyworkspacesWorkspaceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/2/myworkspaces/$workspaceId': {
+      id: '/2/myworkspaces/$workspaceId'
+      path: '/2/myworkspaces/$workspaceId'
+      fullPath: '/2/myworkspaces/$workspaceId'
+      preLoaderRoute: typeof R2MyworkspacesWorkspaceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/1/myworkspaces/$workspaceId': {
+      id: '/1/myworkspaces/$workspaceId'
+      path: '/1/myworkspaces/$workspaceId'
+      fullPath: '/1/myworkspaces/$workspaceId'
+      preLoaderRoute: typeof R1MyworkspacesWorkspaceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/5/myworkspaces/$workspaceId/': {
+      id: '/5/myworkspaces/$workspaceId/'
+      path: '/'
+      fullPath: '/5/myworkspaces/$workspaceId/'
+      preLoaderRoute: typeof R5MyworkspacesWorkspaceIdIndexRouteImport
+      parentRoute: typeof R5MyworkspacesWorkspaceIdRoute
+    }
+    '/4/myworkspaces/$workspaceId/': {
+      id: '/4/myworkspaces/$workspaceId/'
+      path: '/'
+      fullPath: '/4/myworkspaces/$workspaceId/'
+      preLoaderRoute: typeof R4MyworkspacesWorkspaceIdIndexRouteImport
+      parentRoute: typeof R4MyworkspacesWorkspaceIdRoute
+    }
+    '/3/myworkspaces/$workspaceId/': {
+      id: '/3/myworkspaces/$workspaceId/'
+      path: '/'
+      fullPath: '/3/myworkspaces/$workspaceId/'
+      preLoaderRoute: typeof R3MyworkspacesWorkspaceIdIndexRouteImport
+      parentRoute: typeof R3MyworkspacesWorkspaceIdRoute
+    }
+    '/2/myworkspaces/$workspaceId/': {
+      id: '/2/myworkspaces/$workspaceId/'
+      path: '/'
+      fullPath: '/2/myworkspaces/$workspaceId/'
+      preLoaderRoute: typeof R2MyworkspacesWorkspaceIdIndexRouteImport
+      parentRoute: typeof R2MyworkspacesWorkspaceIdRoute
+    }
+    '/1/myworkspaces/$workspaceId/': {
+      id: '/1/myworkspaces/$workspaceId/'
+      path: '/'
+      fullPath: '/1/myworkspaces/$workspaceId/'
+      preLoaderRoute: typeof R1MyworkspacesWorkspaceIdIndexRouteImport
+      parentRoute: typeof R1MyworkspacesWorkspaceIdRoute
     }
   }
 }
@@ -143,11 +542,96 @@ const MyworkspacesWorkspaceIdRouteWithChildren =
     MyworkspacesWorkspaceIdRouteChildren,
   )
 
+interface R1MyworkspacesWorkspaceIdRouteChildren {
+  R1MyworkspacesWorkspaceIdIndexRoute: typeof R1MyworkspacesWorkspaceIdIndexRoute
+}
+
+const R1MyworkspacesWorkspaceIdRouteChildren: R1MyworkspacesWorkspaceIdRouteChildren =
+  {
+    R1MyworkspacesWorkspaceIdIndexRoute: R1MyworkspacesWorkspaceIdIndexRoute,
+  }
+
+const R1MyworkspacesWorkspaceIdRouteWithChildren =
+  R1MyworkspacesWorkspaceIdRoute._addFileChildren(
+    R1MyworkspacesWorkspaceIdRouteChildren,
+  )
+
+interface R2MyworkspacesWorkspaceIdRouteChildren {
+  R2MyworkspacesWorkspaceIdIndexRoute: typeof R2MyworkspacesWorkspaceIdIndexRoute
+}
+
+const R2MyworkspacesWorkspaceIdRouteChildren: R2MyworkspacesWorkspaceIdRouteChildren =
+  {
+    R2MyworkspacesWorkspaceIdIndexRoute: R2MyworkspacesWorkspaceIdIndexRoute,
+  }
+
+const R2MyworkspacesWorkspaceIdRouteWithChildren =
+  R2MyworkspacesWorkspaceIdRoute._addFileChildren(
+    R2MyworkspacesWorkspaceIdRouteChildren,
+  )
+
+interface R3MyworkspacesWorkspaceIdRouteChildren {
+  R3MyworkspacesWorkspaceIdIndexRoute: typeof R3MyworkspacesWorkspaceIdIndexRoute
+}
+
+const R3MyworkspacesWorkspaceIdRouteChildren: R3MyworkspacesWorkspaceIdRouteChildren =
+  {
+    R3MyworkspacesWorkspaceIdIndexRoute: R3MyworkspacesWorkspaceIdIndexRoute,
+  }
+
+const R3MyworkspacesWorkspaceIdRouteWithChildren =
+  R3MyworkspacesWorkspaceIdRoute._addFileChildren(
+    R3MyworkspacesWorkspaceIdRouteChildren,
+  )
+
+interface R4MyworkspacesWorkspaceIdRouteChildren {
+  R4MyworkspacesWorkspaceIdIndexRoute: typeof R4MyworkspacesWorkspaceIdIndexRoute
+}
+
+const R4MyworkspacesWorkspaceIdRouteChildren: R4MyworkspacesWorkspaceIdRouteChildren =
+  {
+    R4MyworkspacesWorkspaceIdIndexRoute: R4MyworkspacesWorkspaceIdIndexRoute,
+  }
+
+const R4MyworkspacesWorkspaceIdRouteWithChildren =
+  R4MyworkspacesWorkspaceIdRoute._addFileChildren(
+    R4MyworkspacesWorkspaceIdRouteChildren,
+  )
+
+interface R5MyworkspacesWorkspaceIdRouteChildren {
+  R5MyworkspacesWorkspaceIdIndexRoute: typeof R5MyworkspacesWorkspaceIdIndexRoute
+}
+
+const R5MyworkspacesWorkspaceIdRouteChildren: R5MyworkspacesWorkspaceIdRouteChildren =
+  {
+    R5MyworkspacesWorkspaceIdIndexRoute: R5MyworkspacesWorkspaceIdIndexRoute,
+  }
+
+const R5MyworkspacesWorkspaceIdRouteWithChildren =
+  R5MyworkspacesWorkspaceIdRoute._addFileChildren(
+    R5MyworkspacesWorkspaceIdRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MyworkspacesWorkspaceIdRoute: MyworkspacesWorkspaceIdRouteWithChildren,
+  R1IndexRoute: R1IndexRoute,
+  R2IndexRoute: R2IndexRoute,
+  R3IndexRoute: R3IndexRoute,
+  R4IndexRoute: R4IndexRoute,
+  R5IndexRoute: R5IndexRoute,
   MyworkspacesIndexRoute: MyworkspacesIndexRoute,
+  R1MyworkspacesWorkspaceIdRoute: R1MyworkspacesWorkspaceIdRouteWithChildren,
+  R2MyworkspacesWorkspaceIdRoute: R2MyworkspacesWorkspaceIdRouteWithChildren,
+  R3MyworkspacesWorkspaceIdRoute: R3MyworkspacesWorkspaceIdRouteWithChildren,
+  R4MyworkspacesWorkspaceIdRoute: R4MyworkspacesWorkspaceIdRouteWithChildren,
+  R5MyworkspacesWorkspaceIdRoute: R5MyworkspacesWorkspaceIdRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  R1MyworkspacesIndexRoute: R1MyworkspacesIndexRoute,
+  R2MyworkspacesIndexRoute: R2MyworkspacesIndexRoute,
+  R3MyworkspacesIndexRoute: R3MyworkspacesIndexRoute,
+  R4MyworkspacesIndexRoute: R4MyworkspacesIndexRoute,
+  R5MyworkspacesIndexRoute: R5MyworkspacesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
