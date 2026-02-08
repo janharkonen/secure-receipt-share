@@ -38,7 +38,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background items-center justify-center px-8">
+    <div className="flex min-h-screen bg-background items-center justify-center px-8 max-w-6xl mx-auto">
       <div className="w-full max-w-md text-center">
         <img
           src="/receipt-with-lock-icon-nobg.png"
@@ -51,7 +51,7 @@ function LoginPage() {
 
         <Button
           variant="outline"
-          className="w-full h-12 rounded-lg transition-all"
+          className="w-full h-12 rounded-lg transition-all hover:cursor-pointer"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
         >
