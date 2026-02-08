@@ -32,6 +32,7 @@ type ReceiptsCategory = {
   name: string;
   price: number;
   alv: number;
+  file_id?: string;
 };
 
 type ReceiptsByCategoryObject = Record<string, ReceiptsCategory[]>;
@@ -47,6 +48,7 @@ export const getWorkspaceData = query({
           name: v.string(),
           price: v.number(),
           alv: v.number(),
+          file_id: v.optional(v.string()),
         }),
       ),
     ),
@@ -84,11 +86,20 @@ export const getWorkspaceData = query({
         name: receipt.name,
         price: receipt.price,
         alv: receipt.alv,
+        ...(receipt.file_id != null ? { file_id: receipt.file_id } : {}),
       });
     });
     return {
       workspaceName,
       receiptsByCategoryObject,
     };
+  },
+});
+
+export const getStorageUrl = query({
+  args: { storageId: v.id("_storage") },
+  returns: v.union(v.string(), v.null()),
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
   },
 });

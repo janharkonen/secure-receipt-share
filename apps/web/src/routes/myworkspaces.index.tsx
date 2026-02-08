@@ -9,7 +9,9 @@ export const Route = createFileRoute("/myworkspaces/")({
 });
 
 function WorkspacesPage() {
-  const workspaces1 = useQuery(convexQuery(api.workspaces.getMyWorkspaces, {}));
+  const workspaces1 = useQuery(
+    convexQuery(api.workspaces.getMyWorkspaces, {}),
+  );
 
   return (
     <main className="max-w-6xl mx-auto px-6 py-8">

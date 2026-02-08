@@ -9,9 +9,9 @@
  */
 
 import type * as auth from "../auth.js";
-import type * as healthCheck from "../healthCheck.js";
+import type * as functions_healthCheck from "../functions/healthCheck.js";
+import type * as functions_privateData from "../functions/privateData.js";
 import type * as http from "../http.js";
-import type * as privateData from "../privateData.js";
 import type * as workspaces from "../workspaces.js";
 
 import type {
@@ -22,9 +22,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
-  healthCheck: typeof healthCheck;
+  "functions/healthCheck": typeof functions_healthCheck;
+  "functions/privateData": typeof functions_privateData;
   http: typeof http;
-  privateData: typeof privateData;
   workspaces: typeof workspaces;
 }>;
 

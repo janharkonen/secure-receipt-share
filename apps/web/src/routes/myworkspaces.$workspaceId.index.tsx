@@ -1,12 +1,100 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { useQuery as useConvexQuery } from "convex/react";
+import { FileText } from "lucide-react";
+import { useState } from "react";
 import { api } from "@secure-receipt-share/backend/convex/_generated/api";
 import type { Id } from "@secure-receipt-share/backend/convex/_generated/dataModel";
 import { createFileRoute, useParams } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/myworkspaces/$workspaceId/")({
   component: WorkspacesPage,
 });
+
+type ReceiptRow = {
+  _id: string;
+  name: string;
+  price: number;
+  alv: number;
+  file_id?: string;
+};
+
+function ReceiptAttachmentButton({ receipt }: { receipt: ReceiptRow }) {
+  const [showPdf, setShowPdf] = useState(false);
+  const storageUrl = useConvexQuery(
+    api.workspaces.getStorageUrl,
+    receipt.file_id ? { storageId: receipt.file_id as Id<"_storage"> } : "skip",
+  );
+
+  if (!receipt.file_id) {
+    return <span className="text-muted-foreground/50">—</span>;
+  }
+
+  const url = storageUrl ?? null;
+
+  return (
+    <>
+      <Button
+        variant="ghost"
+        size="icon-xs"
+        aria-label="View attachment"
+        onClick={() => setShowPdf(true)}
+        disabled={storageUrl === undefined || storageUrl === null}
+      >
+        <FileText className="size-4" />
+      </Button>
+      {showPdf && url && (
+        <PdfViewerModal
+          url={url}
+          title={receipt.name}
+          onClose={() => setShowPdf(false)}
+        />
+      )}
+    </>
+  );
+}
+
+function PdfViewerModal({
+  url,
+  title,
+  onClose,
+}: {
+  url: string;
+  title: string;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="PDF attachment"
+      onClick={onClose}
+    >
+      <div
+        className="flex h-[90vh] w-full max-w-4xl flex-col rounded-lg border border-border bg-card shadow-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-border px-4 py-2">
+          <span className="truncate text-sm font-medium text-foreground">
+            {title}
+          </span>
+          <Button variant="ghost" size="xs" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+        <div className="min-h-0 flex-1 p-2">
+          <iframe
+            src={url}
+            title={title}
+            className="h-full w-full rounded border border-border bg-muted"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function WorkspacesPage() {
   const { workspaceId } = useParams({ from: "/myworkspaces/$workspaceId/" });
@@ -51,6 +139,9 @@ function WorkspacesPage() {
                       <th className="text-right px-5 py-3 text-sm font-medium text-muted-foreground">
                         ALV
                       </th>
+                      <th className="w-12 px-5 py-3 text-right text-sm font-medium text-muted-foreground">
+                        Attachment
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -59,11 +150,12 @@ function WorkspacesPage() {
                         <td className="px-5 py-4 text-foreground">
                           {receipt.name}
                         </td>
-                        <td className="px-5 py-4 text-right text-muted-foreground">
+                        <td className="px-5 py-4 text-right">
                           {receipt.price}
                         </td>
-                        <td className="px-5 py-4 text-right text-muted-foreground">
-                          {receipt.alv}
+                        <td className="px-5 py-4 text-right">{receipt.alv}</td>
+                        <td className="px-5 py-4 text-right">
+                          <ReceiptAttachmentButton receipt={receipt} />
                         </td>
                       </tr>
                     ))}

@@ -1,5 +1,5 @@
-import { query } from "./_generated/server";
-import { authComponent } from "./auth";
+import { query } from "../_generated/server";
+import { authComponent } from "../auth";
 
 export const get = query({
   args: {},
