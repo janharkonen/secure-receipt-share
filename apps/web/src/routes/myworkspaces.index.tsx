@@ -21,7 +21,7 @@ export const Route = createFileRoute("/myworkspaces/")({
 
 function WorkspacesPage() {
   const navigate = useNavigate();
-  const workspaces1 = useQuery(convexQuery(api.workspaces.getWorkspaces, {}));
+  const workspaces1 = useQuery(convexQuery(api.workspaces.getMyWorkspaces, {}));
 
   const handleSignOut = async () => {
     await authClient.signOut({
