@@ -21,19 +21,19 @@ function WorkspacesPage() {
   };
   return (
     <div className="min-h-screen bg-background">
-      <nav className="bg-card border-b border-border/60 px-6 py-2 shadow-sm">
+      <nav className="bg-card/80 backdrop-blur-md border-b border-border/40 px-6 py-2.5 shadow-sm sticky top-0 z-40">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 group">
             <img
               src="/receipt-with-lock-icon-light-nobg.png"
               alt="Secure Receipt Share"
-              className="w-12 h-12 rounded-lg object-contain"
+              className="w-11 h-11 rounded-xl object-contain group-hover:rotate-3 transition-transform duration-300"
             />
-            <span className="text-xl font-semibold text-foreground tracking-tight">
+            <span className="text-lg font-bold text-foreground tracking-tight">
               Secure Receipt Share
             </span>
           </div>
-          <Button variant="outline" onClick={handleSignOut}>
+          <Button variant="outline" size="sm" onClick={handleSignOut}>
             Sign Out
           </Button>
         </div>

@@ -38,31 +38,67 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background items-center justify-center px-8 max-w-6xl mx-auto">
-      <div className="w-full max-w-md text-center">
-        <div className="mb-8 relative">
-          <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl scale-150" />
+    <div className="flex min-h-screen bg-background items-center justify-center px-8 max-w-6xl mx-auto relative overflow-hidden">
+      {/* Decorative floating shapes */}
+      <div
+        className="absolute top-20 left-[10%] w-16 h-16 bg-primary/10 rounded-full animate-float"
+        style={{ animationDelay: "0s" }}
+      />
+      <div
+        className="absolute top-40 right-[15%] w-10 h-10 bg-accent/15 rounded-2xl animate-float"
+        style={{ animationDelay: "1.5s" }}
+      />
+      <div
+        className="absolute bottom-32 left-[20%] w-12 h-12 bg-chart-2/10 rounded-full animate-float"
+        style={{ animationDelay: "0.8s" }}
+      />
+      <div
+        className="absolute bottom-48 right-[25%] w-8 h-8 bg-primary/8 rounded-xl animate-float"
+        style={{ animationDelay: "2.2s" }}
+      />
+
+      <div className="w-full max-w-md text-center animate-pop-in">
+        <div className="mb-10 relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/15 to-accent/15 rounded-full blur-3xl scale-150" />
           <img
             src="/receipt-with-lock-icon-light-nobg.png"
             alt="Secure receipt"
-            className="w-48 h-48 object-contain mx-auto relative drop-shadow-lg"
+            className="w-52 h-52 object-contain mx-auto relative drop-shadow-xl hover:scale-105 transition-transform duration-300 animate-gentle-bounce"
           />
         </div>
-        <h1 className="text-4xl font-bold text-foreground mb-3 tracking-tight">
+        <h1 className="text-4xl font-extrabold text-foreground mb-3 tracking-tight">
           Secure Receipt Share
         </h1>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground mb-10 text-base">
           Keep your receipts safe and organized 🌿
         </p>
 
         <Button
           variant="outline"
-          className="w-full h-14 rounded-2xl transition-all hover:cursor-pointer text-base shadow-lg hover:shadow-xl bg-card"
+          className="w-full h-14 rounded-2xl transition-all hover:cursor-pointer text-base shadow-lg hover:shadow-xl bg-card hover:-translate-y-1 active:translate-y-0"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
         >
           {isLoading ? (
-            <span className="text-muted-foreground">Authenticating...</span>
+            <span className="text-muted-foreground flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+              Authenticating...
+            </span>
           ) : (
             <span className="flex items-center justify-center gap-3">
               <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -88,7 +124,7 @@ function LoginPage() {
           )}
         </Button>
 
-        <p className="text-xs text-muted-foreground text-center mt-10">
+        <p className="text-xs text-muted-foreground text-center mt-12 opacity-70">
           Personal app made by{" "}
           <a
             href="https://janharkonen.fi"
