@@ -1,8 +1,19 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useQuery as useConvexQuery } from "convex/react";
-import { ArrowLeft, FileText, Layers, Receipt, TrendingUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  ArrowLeft,
+  Download,
+  ExternalLink,
+  FileText,
+  Layers,
+  Loader2,
+  Receipt,
+  TrendingUp,
+  X,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { api } from "@secure-receipt-share/backend/convex/_generated/api";
 import type { Id } from "@secure-receipt-share/backend/convex/_generated/dataModel";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
@@ -74,36 +85,177 @@ function PdfViewerModal({
   title: string;
   onClose: () => void;
 }) {
-  return (
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  // Close on Escape
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    },
+    [onClose],
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    // Prevent background scroll
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = prev;
+    };
+  }, [handleKeyDown]);
+
+  const isPdf = url.toLowerCase().endsWith(".pdf") || url.includes("pdf");
+  // Google Docs viewer fallback for better cross-browser PDF rendering
+  const viewerUrl = isPdf
+    ? `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`
+    : url;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 backdrop-blur-md p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center"
       role="dialog"
       aria-modal="true"
-      aria-label="PDF attachment"
-      onClick={onClose}
+      aria-label={`Viewing: ${title}`}
     >
+      {/* Backdrop */}
       <div
-        className="flex h-[90vh] w-full max-w-4xl flex-col rounded-3xl border border-border/40 bg-card shadow-2xl shadow-primary/10 animate-pop-in"
+        className="absolute inset-0 bg-foreground/40 backdrop-blur-lg animate-in fade-in duration-200"
+        onClick={onClose}
+      />
+
+      {/* Modal panel */}
+      <div
+        className="relative flex h-[92vh] w-[95vw] max-w-5xl flex-col rounded-3xl border border-border/30 bg-card shadow-2xl shadow-primary/10 animate-pop-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-border/40 px-6 py-4">
-          <span className="truncate text-sm font-bold text-foreground flex items-center gap-2">
-            <FileText className="size-4 text-primary" />
-            {title}
-          </span>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            Close
-          </Button>
+        {/* ── Toolbar ─────────────────────────────── */}
+        <div className="flex items-center justify-between gap-3 border-b border-border/30 px-5 py-3">
+          {/* Left: file info */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <FileText className="size-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold text-foreground leading-tight">
+                {title}
+              </p>
+              <p className="text-[11px] text-muted-foreground">PDF document</p>
+            </div>
+          </div>
+
+          {/* Right: actions */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => window.open(url, "_blank", "noopener")}
+              aria-label="Open in new tab"
+            >
+              <ExternalLink className="size-3.5" />
+              <span className="hidden sm:inline">Open</span>
+            </Button>
+            <a
+              href={url}
+              download
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+              aria-label="Download file"
+            >
+              <Download className="size-3.5" />
+              <span className="hidden sm:inline">Download</span>
+            </a>
+            <div className="w-px h-5 bg-border/50 mx-1 hidden sm:block" />
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground hover:bg-destructive/10 rounded-lg"
+              aria-label="Close"
+            >
+              <X className="size-4" />
+            </Button>
+          </div>
         </div>
-        <div className="min-h-0 flex-1 p-3">
+
+        {/* ── Content area ────────────────────────── */}
+        <div className="relative min-h-0 flex-1 bg-muted/10 m-2 rounded-2xl overflow-hidden">
+          {/* Loading overlay */}
+          {isLoading && !hasError && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-card/80 backdrop-blur-sm">
+              <Loader2 className="size-8 text-primary animate-spin" />
+              <p className="text-sm font-medium text-muted-foreground">
+                Loading document…
+              </p>
+            </div>
+          )}
+
+          {/* Error state */}
+          {hasError && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-card">
+              <div className="flex size-16 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
+                <FileText className="size-8" />
+              </div>
+              <div className="text-center space-y-1">
+                <p className="text-sm font-bold text-foreground">
+                  Unable to preview
+                </p>
+                <p className="text-xs text-muted-foreground max-w-xs">
+                  The document couldn't be loaded in the viewer.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs"
+                  onClick={() => {
+                    setHasError(false);
+                    setIsLoading(true);
+                  }}
+                >
+                  Try again
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs gap-1.5"
+                  onClick={() => window.open(url, "_blank", "noopener")}
+                >
+                  <ExternalLink className="size-3.5" />
+                  Open in browser
+                </Button>
+              </div>
+            </div>
+          )}
+
           <iframe
-            src={url}
+            src={viewerUrl}
             title={title}
-            className="h-full w-full rounded-2xl border border-border/30 bg-muted/20"
+            className="h-full w-full rounded-2xl border-0"
+            onLoad={() => setIsLoading(false)}
+            onError={() => {
+              setIsLoading(false);
+              setHasError(true);
+            }}
           />
         </div>
+
+        {/* ── Bottom hint ─────────────────────────── */}
+        <div className="flex items-center justify-center px-5 py-2 border-t border-border/20">
+          <p className="text-[11px] text-muted-foreground/70">
+            Press{" "}
+            <kbd className="px-1.5 py-0.5 rounded bg-muted/60 text-[10px] font-mono font-medium text-muted-foreground mx-0.5">
+              Esc
+            </kbd>{" "}
+            to close
+          </p>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
