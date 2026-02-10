@@ -21,15 +21,15 @@ function WorkspacesPage() {
   };
   return (
     <div className="min-h-screen bg-background">
-      <nav className="bg-card border-b border-border px-6 py-4">
+      <nav className="bg-card border-b border-border/60 px-6 py-2 shadow-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
-              src="/receipt-with-lock-icon-nobg.png"
+              src="/receipt-with-lock-icon-light-nobg.png"
               alt="Secure Receipt Share"
-              className="w-10 h-10 rounded-lg object-contain"
+              className="w-12 h-12 rounded-lg object-contain"
             />
-            <span className="text-xl font-semibold text-foreground">
+            <span className="text-xl font-semibold text-foreground tracking-tight">
               Secure Receipt Share
             </span>
           </div>

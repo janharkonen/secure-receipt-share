@@ -40,18 +40,24 @@ function LoginPage() {
   return (
     <div className="flex min-h-screen bg-background items-center justify-center px-8 max-w-6xl mx-auto">
       <div className="w-full max-w-md text-center">
-        <img
-          src="/receipt-with-lock-icon-nobg.png"
-          alt="Secure receipt"
-          className="w-48 h-48 object-contain mx-auto mb-8"
-        />
-        <h1 className="text-4xl font-bold text-foreground mb-4">
+        <div className="mb-8 relative">
+          <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl scale-150" />
+          <img
+            src="/receipt-with-lock-icon-light-nobg.png"
+            alt="Secure receipt"
+            className="w-48 h-48 object-contain mx-auto relative drop-shadow-lg"
+          />
+        </div>
+        <h1 className="text-4xl font-bold text-foreground mb-3 tracking-tight">
           Secure Receipt Share
         </h1>
+        <p className="text-muted-foreground mb-8">
+          Keep your receipts safe and organized 🌿
+        </p>
 
         <Button
           variant="outline"
-          className="w-full h-12 rounded-lg transition-all hover:cursor-pointer"
+          className="w-full h-14 rounded-2xl transition-all hover:cursor-pointer text-base shadow-lg hover:shadow-xl bg-card"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
         >
@@ -82,13 +88,13 @@ function LoginPage() {
           )}
         </Button>
 
-        <p className="text-xs text-muted-foreground text-center mt-8">
+        <p className="text-xs text-muted-foreground text-center mt-10">
           Personal app made by{" "}
           <a
             href="https://janharkonen.fi"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-primary transition-colors"
+            className="underline hover:text-primary transition-colors font-medium"
           >
             Jan Härkönen
           </a>

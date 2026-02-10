@@ -66,29 +66,29 @@ function PdfViewerModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4"
       role="dialog"
       aria-modal="true"
       aria-label="PDF attachment"
       onClick={onClose}
     >
       <div
-        className="flex h-[90vh] w-full max-w-4xl flex-col rounded-lg border border-border bg-card shadow-lg"
+        className="flex h-[90vh] w-full max-w-4xl flex-col rounded-2xl border border-border/60 bg-card shadow-2xl shadow-primary/10"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-border px-4 py-2">
-          <span className="truncate text-sm font-medium text-foreground">
+        <div className="flex items-center justify-between border-b border-border/60 px-5 py-3">
+          <span className="truncate text-sm font-semibold text-foreground">
             {title}
           </span>
-          <Button variant="ghost" size="xs" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={onClose}>
             Close
           </Button>
         </div>
-        <div className="min-h-0 flex-1 p-2">
+        <div className="min-h-0 flex-1 p-3">
           <iframe
             src={url}
             title={title}
-            className="h-full w-full rounded border border-border bg-muted"
+            className="h-full w-full rounded-xl border border-border/40 bg-muted/30"
           />
         </div>
       </div>
@@ -110,10 +110,10 @@ function WorkspacesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="bg-card border-b border-border px-6 py-4">
+      <nav className="bg-card border-b border-border/60 px-6 py-4 shadow-sm">
         <div className="max-w-6xl mx-auto flex items-center gap-3">
-          <span className="text-xl font-semibold text-foreground">
-            {isLoading ? "Loading..." : error ? "Error" : workspaceName}
+          <span className="text-xl font-semibold text-foreground tracking-tight">
+            {isLoading ? "Loading..." : error ? "Error" : `📋 ${workspaceName}`}
           </span>
         </div>
       </nav>
@@ -121,39 +121,39 @@ function WorkspacesPage() {
       <main className="max-w-6xl mx-auto px-6 py-8">
         {Object.entries(receiptsByCategoryObject ?? {}).map(
           ([category, receipts]) => (
-            <section key={category} className="mb-8">
-              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                <span className="w-2 h-2 bg-primary rounded-full" />
+            <section key={category} className="mb-10">
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2.5">
+                <span className="w-2.5 h-2.5 bg-gradient-to-br from-primary to-accent rounded-full shadow-sm" />
                 {category}
               </h2>
-              <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+              <div className="bg-card rounded-2xl border border-border/60 shadow-lg shadow-primary/5 overflow-hidden">
                 <table className="w-full">
-                  <thead className="bg-muted/50 border-b border-border">
+                  <thead className="bg-muted/40 border-b border-border/50">
                     <tr>
-                      <th className="text-left px-5 py-3 text-sm font-medium text-muted-foreground">
+                      <th className="text-left px-5 py-3.5 text-sm font-semibold text-muted-foreground">
                         Name
                       </th>
-                      <th className="text-right px-5 py-3 text-sm font-medium text-muted-foreground">
+                      <th className="text-right px-5 py-3.5 text-sm font-semibold text-muted-foreground">
                         Price
                       </th>
-                      <th className="text-right px-5 py-3 text-sm font-medium text-muted-foreground">
+                      <th className="text-right px-5 py-3.5 text-sm font-semibold text-muted-foreground">
                         ALV
                       </th>
-                      <th className="w-12 px-5 py-3 text-right text-sm font-medium text-muted-foreground">
-                        Attachment
+                      <th className="w-12 px-5 py-3.5 text-right text-sm font-semibold text-muted-foreground">
+                        File
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-border/40">
                     {receipts.map((receipt) => (
-                      <tr key={receipt._id} className="hover:bg-muted/30">
-                        <td className="px-5 py-4 text-foreground">
+                      <tr key={receipt._id} className="hover:bg-muted/30 transition-colors">
+                        <td className="px-5 py-4 text-foreground font-medium">
                           {receipt.name}
                         </td>
-                        <td className="px-5 py-4 text-right">
+                        <td className="px-5 py-4 text-right tabular-nums">
                           {receipt.price}
                         </td>
-                        <td className="px-5 py-4 text-right">{receipt.alv}</td>
+                        <td className="px-5 py-4 text-right tabular-nums text-muted-foreground">{receipt.alv}</td>
                         <td className="px-5 py-4 text-right">
                           <ReceiptAttachmentButton receipt={receipt} />
                         </td>
