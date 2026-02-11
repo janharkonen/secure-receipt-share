@@ -1,6 +1,6 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { useQuery as useConvexQuery } from "convex/react";
+import { useMutation, useQuery as useConvexQuery } from "convex/react";
 import {
   ArrowLeft,
   Download,
@@ -18,6 +18,8 @@ import { api } from "@secure-receipt-share/backend/convex/_generated/api";
 import type { Id } from "@secure-receipt-share/backend/convex/_generated/dataModel";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/myworkspaces/$workspaceId/")({
@@ -261,6 +263,199 @@ function PdfViewerModal({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Edit receipt modal                                                 */
+/* ------------------------------------------------------------------ */
+
+function EditReceiptModal({
+  receipt,
+  onClose,
+}: {
+  receipt: ReceiptRow;
+  onClose: () => void;
+}) {
+  const updateReceipt = useMutation(api.workspaces.updateReceipt);
+  const [category, setCategory] = useState(receipt.category);
+  const [name, setName] = useState(receipt.name);
+  const [priceEur, setPriceEur] = useState(
+    (Number(receipt.price) / 100).toFixed(2),
+  );
+  const [alv, setAlv] = useState(String(receipt.alv));
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    },
+    [onClose],
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = prev;
+    };
+  }, [handleKeyDown]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      const priceCents = Math.round(parseFloat(priceEur) * 100);
+      const alvNum = parseFloat(alv);
+      if (Number.isNaN(priceCents) || priceCents < 0) {
+        setError("Price must be a valid non-negative number.");
+        return;
+      }
+      if (Number.isNaN(alvNum) || alvNum < 0 || alvNum > 100) {
+        setError("ALV must be a number between 0 and 100.");
+        return;
+      }
+      await updateReceipt({
+        receiptId: receipt._id,
+        category: category.trim() || undefined,
+        name: name.trim() || undefined,
+        price: BigInt(priceCents),
+        alv: alvNum,
+      });
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update receipt");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-receipt-title"
+    >
+      <div
+        className="absolute inset-0 bg-foreground/40 backdrop-blur-lg animate-in fade-in duration-200"
+        onClick={onClose}
+      />
+      <div
+        className="relative w-full max-w-md rounded-2xl border border-border/30 bg-card shadow-2xl shadow-primary/10 animate-pop-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-border/30 px-5 py-3">
+          <h2
+            id="edit-receipt-title"
+            className="text-base font-bold text-foreground"
+          >
+            Edit receipt
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground hover:bg-destructive/10 rounded-lg"
+            aria-label="Close"
+          >
+            <X className="size-4" />
+          </Button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="edit-category">Category</Label>
+            <Input
+              id="edit-category"
+              list="edit-category-list"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="e.g. Food, Transport"
+              className="rounded-xl"
+            />
+            <datalist id="edit-category-list">
+              {Object.keys(categoryMeta).map((opt) => (
+                <option key={opt} value={opt} />
+              ))}
+            </datalist>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="edit-name">Name</Label>
+            <Input
+              id="edit-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Receipt name"
+              className="rounded-xl"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="edit-price">Price (€)</Label>
+            <Input
+              id="edit-price"
+              type="number"
+              step="0.01"
+              min="0"
+              value={priceEur}
+              onChange={(e) => setPriceEur(e.target.value)}
+              placeholder="0.00"
+              className="rounded-xl"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="edit-alv">ALV %</Label>
+            <Input
+              id="edit-alv"
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              value={alv}
+              onChange={(e) => setAlv(e.target.value)}
+              placeholder="24"
+              className="rounded-xl"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Attachment</Label>
+            <p className="text-sm text-muted-foreground py-2">
+              {receipt.file_id ? "File attached" : "No file"}
+            </p>
+          </div>
+          {error && (
+            <p className="text-sm text-destructive font-medium">{error}</p>
+          )}
+          <div className="flex gap-2 pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button type="submit" className="flex-1" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin mr-2" />
+                  Saving…
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Stat card                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -402,6 +597,7 @@ function formatPrice(price: bigint) {
 
 function WorkspacesPage() {
   const { workspaceId } = useParams({ from: "/myworkspaces/$workspaceId/" });
+  const [editingReceipt, setEditingReceipt] = useState<ReceiptRow | null>(null);
   const {
     data: receipts = [],
     isLoading,
@@ -562,7 +758,17 @@ function WorkspacesPage() {
                     {receipts.map((receipt, i) => (
                       <tr
                         key={receipt._id}
-                        className={`group transition-colors duration-150 hover:bg-primary/[0.04] ${
+                        role="button"
+                        tabIndex={0}
+                        title="Double-click to edit"
+                        onDoubleClick={() => setEditingReceipt(receipt)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setEditingReceipt(receipt);
+                          }
+                        }}
+                        className={`group transition-colors duration-150 hover:bg-primary/[0.04] cursor-pointer ${
                           i % 2 === 1 ? "bg-muted/10" : ""
                         }`}
                       >
@@ -575,7 +781,11 @@ function WorkspacesPage() {
                         <td className="px-5 py-3.5 text-right tabular-nums text-muted-foreground">
                           {receipt.alv}&nbsp;%
                         </td>
-                        <td className="px-5 py-3.5 text-center">
+                        <td
+                          className="px-5 py-3.5 text-center"
+                          onClick={(e) => e.stopPropagation()}
+                          onDoubleClick={(e) => e.stopPropagation()}
+                        >
                           <ReceiptAttachmentButton receipt={receipt} />
                         </td>
                       </tr>
@@ -600,6 +810,13 @@ function WorkspacesPage() {
           );
         })}
       </main>
+
+      {editingReceipt && (
+        <EditReceiptModal
+          receipt={editingReceipt}
+          onClose={() => setEditingReceipt(null)}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { authComponent } from "./auth";
 import { Id } from "./_generated/dataModel";
 
@@ -77,5 +77,40 @@ export const getStorageUrl = query({
   returns: v.union(v.string(), v.null()),
   handler: async (ctx, args) => {
     return await ctx.storage.getUrl(args.storageId);
+  },
+});
+
+export const updateReceipt = mutation({
+  args: {
+    receiptId: v.id("receipts"),
+    category: v.optional(v.string()),
+    name: v.optional(v.string()),
+    price: v.optional(v.int64()),
+    alv: v.optional(v.float64()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const receipt = await ctx.db.get(args.receiptId);
+    if (!receipt) throw new Error("Receipt not found");
+    const workspace = await ctx.db.get(receipt.workspace_id);
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) throw new Error("Not authenticated");
+    if (!workspace?.access_rights.includes(authUser.email)) {
+      throw new Error("Not authorized");
+    }
+    const updates: {
+      category?: string;
+      name?: string;
+      price?: bigint;
+      alv?: number;
+    } = {};
+    if (args.category !== undefined) updates.category = args.category;
+    if (args.name !== undefined) updates.name = args.name;
+    if (args.price !== undefined) updates.price = args.price;
+    if (args.alv !== undefined) updates.alv = args.alv;
+    if (Object.keys(updates).length > 0) {
+      await ctx.db.patch(args.receiptId, updates);
+    }
+    return null;
   },
 });
