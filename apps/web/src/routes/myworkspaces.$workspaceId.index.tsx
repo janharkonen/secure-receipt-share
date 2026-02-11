@@ -10,9 +10,10 @@ import {
   Loader2,
   Receipt,
   TrendingUp,
+  Upload,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { api } from "@secure-receipt-share/backend/convex/_generated/api";
 import type { Id } from "@secure-receipt-share/backend/convex/_generated/dataModel";
@@ -266,6 +267,9 @@ function PdfViewerModal({
 /*  Edit receipt modal                                                 */
 /* ------------------------------------------------------------------ */
 
+const ACCEPTED_FILE_TYPES =
+  "application/pdf,image/jpeg,image/png,image/webp,image/heic";
+
 function EditReceiptModal({
   receipt,
   onClose,
@@ -274,12 +278,17 @@ function EditReceiptModal({
   onClose: () => void;
 }) {
   const updateReceipt = useMutation(api.workspaces.updateReceipt);
+  const generateUploadUrl = useMutation(
+    api.workspaces.generateUploadUrl,
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState(receipt.category);
   const [name, setName] = useState(receipt.name);
   const [priceEur, setPriceEur] = useState(
     (Number(receipt.price) / 100).toFixed(2),
   );
   const [alv, setAlv] = useState(String(receipt.alv));
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -315,12 +324,27 @@ function EditReceiptModal({
         setError("ALV must be a number between 0 and 100.");
         return;
       }
+
+      let fileId: Id<"_storage"> | undefined = receipt.file_id;
+      if (selectedFile) {
+        const postUrl = await generateUploadUrl();
+        const result = await fetch(postUrl, {
+          method: "POST",
+          headers: { "Content-Type": selectedFile.type },
+          body: selectedFile,
+        });
+        if (!result.ok) throw new Error("File upload failed");
+        const { storageId } = (await result.json()) as { storageId: Id<"_storage"> };
+        fileId = storageId;
+      }
+
       await updateReceipt({
         receiptId: receipt._id,
         category: category.trim() || undefined,
         name: name.trim() || undefined,
         price: BigInt(priceCents),
         alv: alvNum,
+        file_id: fileId,
       });
       onClose();
     } catch (err) {
@@ -421,9 +445,80 @@ function EditReceiptModal({
           </div>
           <div className="space-y-2">
             <Label>Attachment</Label>
-            <p className="text-sm text-muted-foreground py-2">
-              {receipt.file_id ? "File attached" : "No file"}
-            </p>
+            <div className="rounded-xl border border-border/50 border-dashed bg-muted/20 p-4 transition-colors hover:bg-muted/30">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={ACCEPTED_FILE_TYPES}
+                className="sr-only"
+                onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+              />
+              {selectedFile ? (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <FileText className="size-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {selectedFile.name}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {(selectedFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 gap-1.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Replace
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive hover:text-destructive"
+                      onClick={() => {
+                        setSelectedFile(null);
+                        if (fileInputRef.current) fileInputRef.current.value = "";
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex w-full flex-col items-center gap-2 py-2 text-center"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Upload className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {receipt.file_id
+                        ? "Replace attachment"
+                        : "Upload receipt"}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      PDF, JPG, PNG, WebP or HEIC
+                    </p>
+                  </div>
+                </button>
+              )}
+            </div>
+            {receipt.file_id && !selectedFile && (
+              <p className="text-[11px] text-muted-foreground">
+                Existing file will be kept. Upload a new file to replace it.
+              </p>
+            )}
           </div>
           {error && (
             <p className="text-sm text-destructive font-medium">{error}</p>

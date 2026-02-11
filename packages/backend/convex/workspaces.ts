@@ -79,6 +79,15 @@ export const getWorkspaceData = query({
   },
 });
 
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) throw new Error("Not authenticated");
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
 export const getStorageUrl = query({
   args: { storageId: v.id("_storage") },
   returns: v.union(v.string(), v.null()),
@@ -94,6 +103,7 @@ export const updateReceipt = mutation({
     name: v.optional(v.string()),
     price: v.optional(v.int64()),
     alv: v.optional(v.float64()),
+    file_id: v.optional(v.id("_storage")),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -110,11 +120,13 @@ export const updateReceipt = mutation({
       name?: string;
       price?: bigint;
       alv?: number;
+      file_id?: Id<"_storage">;
     } = {};
     if (args.category !== undefined) updates.category = args.category;
     if (args.name !== undefined) updates.name = args.name;
     if (args.price !== undefined) updates.price = args.price;
     if (args.alv !== undefined) updates.alv = args.alv;
+    if (args.file_id !== undefined) updates.file_id = args.file_id;
     if (Object.keys(updates).length > 0) {
       await ctx.db.patch(args.receiptId, updates);
     }
