@@ -8,6 +8,7 @@ import {
   FileText,
   Layers,
   Loader2,
+  Plus,
   Receipt,
   TrendingUp,
   Upload,
@@ -264,6 +265,278 @@ function PdfViewerModal({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Add receipt modal                                                  */
+/* ------------------------------------------------------------------ */
+
+function AddReceiptModal({
+  workspaceId,
+  onClose,
+}: {
+  workspaceId: Id<"workspaces">;
+  onClose: () => void;
+}) {
+  const createReceipt = useMutation(api.workspaces.createReceipt);
+  const generateUploadUrl = useMutation(api.workspaces.generateUploadUrl);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [category, setCategory] = useState("");
+  const [name, setName] = useState("");
+  const [priceEur, setPriceEur] = useState("");
+  const [alv, setAlv] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    },
+    [onClose],
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = prev;
+    };
+  }, [handleKeyDown]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      const priceCents = Math.round(parseFloat(priceEur) * 100);
+      const alvNum = parseFloat(alv);
+      if (Number.isNaN(priceCents) || priceCents < 0) {
+        setError("Price must be a valid non-negative number.");
+        return;
+      }
+      if (Number.isNaN(alvNum) || alvNum < 0 || alvNum > 100) {
+        setError("ALV must be a number between 0 and 100.");
+        return;
+      }
+      if (!category.trim()) {
+        setError("Category is required.");
+        return;
+      }
+      if (!name.trim()) {
+        setError("Name is required.");
+        return;
+      }
+
+      let fileId: Id<"_storage"> | undefined;
+      if (selectedFile) {
+        const postUrl = await generateUploadUrl();
+        const result = await fetch(postUrl, {
+          method: "POST",
+          headers: { "Content-Type": selectedFile.type },
+          body: selectedFile,
+        });
+        if (!result.ok) throw new Error("File upload failed");
+        const { storageId } = (await result.json()) as {
+          storageId: Id<"_storage">;
+        };
+        fileId = storageId;
+      }
+
+      await createReceipt({
+        workspaceId,
+        category: category.trim(),
+        name: name.trim(),
+        price: BigInt(priceCents),
+        alv: alvNum,
+        file_id: fileId,
+      });
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to add receipt");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-receipt-title"
+    >
+      <div
+        className="absolute inset-0 bg-foreground/40 backdrop-blur-lg animate-in fade-in duration-200"
+        onClick={onClose}
+      />
+      <div
+        className="relative w-full max-w-md rounded-2xl border border-border/30 bg-card shadow-2xl shadow-primary/10 animate-pop-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-border/30 px-5 py-3">
+          <h2
+            id="add-receipt-title"
+            className="text-base font-bold text-foreground"
+          >
+            Add receipt
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground hover:bg-destructive/10 rounded-lg"
+            aria-label="Close"
+          >
+            <X className="size-4" />
+          </Button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="add-category">Category</Label>
+            <Input
+              id="add-category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="rounded-xl"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="add-name">Name</Label>
+            <Input
+              id="add-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="rounded-xl"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="add-price">Price (€)</Label>
+            <Input
+              id="add-price"
+              type="number"
+              step="0.01"
+              value={priceEur}
+              onChange={(e) => setPriceEur(e.target.value)}
+              className="rounded-xl"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="add-alv">ALV %</Label>
+            <Input
+              id="add-alv"
+              type="number"
+              step="0.01"
+              value={alv}
+              onChange={(e) => setAlv(e.target.value)}
+              className="rounded-xl"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Attachment</Label>
+            <div className="rounded-xl border border-border/50 border-dashed bg-muted/20 p-4 transition-colors hover:bg-muted/30">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={ACCEPTED_FILE_TYPES}
+                className="sr-only"
+                onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+              />
+              {selectedFile ? (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <FileText className="size-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {selectedFile.name}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {(selectedFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 gap-1.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Replace
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive hover:text-destructive"
+                      onClick={() => {
+                        setSelectedFile(null);
+                        if (fileInputRef.current)
+                          fileInputRef.current.value = "";
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex w-full flex-col items-center gap-2 py-2 text-center"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Upload className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Upload receipt
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      PDF, JPG, PNG, WebP or HEIC
+                    </p>
+                  </div>
+                </button>
+              )}
+            </div>
+          </div>
+          {error && (
+            <p className="text-sm text-destructive font-medium">{error}</p>
+          )}
+          <div className="flex gap-2 pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button type="submit" className="flex-1" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin mr-2" />
+                  Adding…
+                </>
+              ) : (
+                "Add"
+              )}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Edit receipt modal                                                 */
 /* ------------------------------------------------------------------ */
 
@@ -278,9 +551,7 @@ function EditReceiptModal({
   onClose: () => void;
 }) {
   const updateReceipt = useMutation(api.workspaces.updateReceipt);
-  const generateUploadUrl = useMutation(
-    api.workspaces.generateUploadUrl,
-  );
+  const generateUploadUrl = useMutation(api.workspaces.generateUploadUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState(receipt.category);
   const [name, setName] = useState(receipt.name);
@@ -334,7 +605,9 @@ function EditReceiptModal({
           body: selectedFile,
         });
         if (!result.ok) throw new Error("File upload failed");
-        const { storageId } = (await result.json()) as { storageId: Id<"_storage"> };
+        const { storageId } = (await result.json()) as {
+          storageId: Id<"_storage">;
+        };
         fileId = storageId;
       }
 
@@ -434,11 +707,8 @@ function EditReceiptModal({
               id="edit-alv"
               type="number"
               step="0.01"
-              min="0"
-              max="100"
               value={alv}
               onChange={(e) => setAlv(e.target.value)}
-              placeholder="24"
               className="rounded-xl"
               required
             />
@@ -485,7 +755,8 @@ function EditReceiptModal({
                       className="text-xs text-destructive hover:text-destructive"
                       onClick={() => {
                         setSelectedFile(null);
-                        if (fileInputRef.current) fileInputRef.current.value = "";
+                        if (fileInputRef.current)
+                          fileInputRef.current.value = "";
                       }}
                     >
                       Remove
@@ -693,6 +964,7 @@ function formatPrice(price: bigint) {
 function WorkspacesPage() {
   const { workspaceId } = useParams({ from: "/myworkspaces/$workspaceId/" });
   const [editingReceipt, setEditingReceipt] = useState<ReceiptRow | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
   const {
     data: { workspace_name, receipts } = {
       workspace_name: "",
@@ -755,7 +1027,7 @@ function WorkspacesPage() {
           >
             <ArrowLeft className="size-4" />
           </Link>
-          <div className="min-w-0 animate-slide-up">
+          <div className="min-w-0 flex-1 animate-slide-up">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Workspace
             </p>
@@ -788,6 +1060,13 @@ function WorkspacesPage() {
             value={String(stats.categoriesCount)}
             delay={160}
           />
+        </div>
+
+        <div className="flex justify-start">
+          <Button onClick={() => setShowAddModal(true)} className="gap-2">
+            <Plus className="size-4" />
+            Add receipt
+          </Button>
         </div>
 
         {/* ── Empty state ────────────────────────────── */}
@@ -913,6 +1192,12 @@ function WorkspacesPage() {
         <EditReceiptModal
           receipt={editingReceipt}
           onClose={() => setEditingReceipt(null)}
+        />
+      )}
+      {showAddModal && (
+        <AddReceiptModal
+          workspaceId={workspaceId as Id<"workspaces">}
+          onClose={() => setShowAddModal(false)}
         />
       )}
     </div>

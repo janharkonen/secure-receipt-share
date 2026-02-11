@@ -96,6 +96,34 @@ export const getStorageUrl = query({
   },
 });
 
+export const createReceipt = mutation({
+  args: {
+    workspaceId: v.id("workspaces"),
+    category: v.string(),
+    name: v.string(),
+    price: v.int64(),
+    alv: v.float64(),
+    file_id: v.optional(v.id("_storage")),
+  },
+  returns: v.id("receipts"),
+  handler: async (ctx, args) => {
+    const workspace = await ctx.db.get(args.workspaceId);
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) throw new Error("Not authenticated");
+    if (!workspace?.access_rights.includes(authUser.email)) {
+      throw new Error("Not authorized");
+    }
+    return await ctx.db.insert("receipts", {
+      workspace_id: args.workspaceId,
+      category: args.category,
+      name: args.name,
+      price: args.price,
+      alv: args.alv,
+      file_id: args.file_id,
+    });
+  },
+});
+
 export const updateReceipt = mutation({
   args: {
     receiptId: v.id("receipts"),
