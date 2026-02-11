@@ -599,7 +599,10 @@ function WorkspacesPage() {
   const { workspaceId } = useParams({ from: "/myworkspaces/$workspaceId/" });
   const [editingReceipt, setEditingReceipt] = useState<ReceiptRow | null>(null);
   const {
-    data: receipts = [],
+    data: { workspace_name, receipts } = {
+      workspace_name: "",
+      receipts: [],
+    } as { workspace_name: string; receipts: ReceiptRow[] },
     isLoading,
     error,
   } = useQuery(
@@ -631,7 +634,7 @@ function WorkspacesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen big-background flex items-center justify-center">
         <div className="text-center animate-pop-in space-y-3">
           <span className="text-5xl">😵</span>
           <p className="text-lg font-bold text-destructive">
@@ -662,7 +665,7 @@ function WorkspacesPage() {
               Workspace
             </p>
             <h1 className="text-xl font-bold text-foreground tracking-tight truncate">
-              {receipts[0]?.category}
+              {workspace_name}
             </h1>
           </div>
         </div>

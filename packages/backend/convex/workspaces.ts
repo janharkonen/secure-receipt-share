@@ -29,16 +29,19 @@ export const getMyWorkspaces = query({
 });
 
 export const getWorkspaceData = query({
-  returns: v.array(
-    v.object({
-      _id: v.id("receipts"),
-      category: v.string(),
-      name: v.string(),
-      price: v.int64(),
-      alv: v.float64(),
-      file_id: v.optional(v.string()),
-    }),
-  ),
+  returns: v.object({
+    workspace_name: v.string(),
+    receipts: v.array(
+      v.object({
+        _id: v.id("receipts"),
+        category: v.string(),
+        name: v.string(),
+        price: v.int64(),
+        alv: v.float64(),
+        file_id: v.optional(v.string()),
+      }),
+    ),
+  }),
   args: {
     workspaceId: v.id("workspaces"),
   },
@@ -61,7 +64,7 @@ export const getWorkspaceData = query({
       .filter((q) => q.eq(q.field("workspace_id"), args.workspaceId))
       .collect();
 
-    return receipts.map((receipt) => ({
+    const receiptsData = receipts.map((receipt) => ({
       _id: receipt._id,
       category: receipt.category,
       name: receipt.name,
@@ -69,6 +72,10 @@ export const getWorkspaceData = query({
       alv: receipt.alv,
       file_id: receipt.file_id,
     }));
+    return {
+      workspace_name: workspaceName,
+      receipts: receiptsData,
+    };
   },
 });
 
