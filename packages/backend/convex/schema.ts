@@ -6,7 +6,7 @@ export default defineSchema({
     workspace_id: v.id("workspaces"),
     category: v.string(),
     name: v.string(),
-    price: v.float64(),
+    price: v.int64(),
     alv: v.float64(),
     file_id: v.optional(v.id("_storage")),
   }),

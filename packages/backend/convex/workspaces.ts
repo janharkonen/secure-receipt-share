@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { authComponent } from "./auth";
+import { Id } from "./_generated/dataModel";
 
 export const getMyWorkspaces = query({
   returns: v.array(
@@ -27,32 +28,17 @@ export const getMyWorkspaces = query({
   },
 });
 
-type ReceiptsCategory = {
-  _id: string;
-  name: string;
-  price: number;
-  alv: number;
-  file_id?: string;
-};
-
-type ReceiptsByCategoryObject = Record<string, ReceiptsCategory[]>;
-
 export const getWorkspaceData = query({
-  returns: v.object({
-    workspaceName: v.string(),
-    receiptsByCategoryObject: v.record(
-      v.string(),
-      v.array(
-        v.object({
-          _id: v.string(),
-          name: v.string(),
-          price: v.number(),
-          alv: v.number(),
-          file_id: v.optional(v.string()),
-        }),
-      ),
-    ),
-  }),
+  returns: v.array(
+    v.object({
+      _id: v.id("receipts"),
+      category: v.string(),
+      name: v.string(),
+      price: v.int64(),
+      alv: v.float64(),
+      file_id: v.optional(v.string()),
+    }),
+  ),
   args: {
     workspaceId: v.id("workspaces"),
   },
@@ -75,24 +61,14 @@ export const getWorkspaceData = query({
       .filter((q) => q.eq(q.field("workspace_id"), args.workspaceId))
       .collect();
 
-    // Process data
-    const receiptsByCategoryObject: ReceiptsByCategoryObject = {};
-    receipts.forEach((receipt) => {
-      if (!receiptsByCategoryObject[receipt.category]) {
-        receiptsByCategoryObject[receipt.category] = [];
-      }
-      receiptsByCategoryObject[receipt.category].push({
-        _id: receipt._id.toString(),
-        name: receipt.name,
-        price: receipt.price,
-        alv: receipt.alv,
-        ...(receipt.file_id != null ? { file_id: receipt.file_id } : {}),
-      });
-    });
-    return {
-      workspaceName,
-      receiptsByCategoryObject,
-    };
+    return receipts.map((receipt) => ({
+      _id: receipt._id,
+      category: receipt.category,
+      name: receipt.name,
+      price: receipt.price,
+      alv: receipt.alv,
+      file_id: receipt.file_id,
+    }));
   },
 });
 

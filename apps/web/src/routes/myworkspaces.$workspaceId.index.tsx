@@ -25,11 +25,12 @@ export const Route = createFileRoute("/myworkspaces/$workspaceId/")({
 });
 
 type ReceiptRow = {
-  _id: string;
+  _id: Id<"receipts">;
+  category: string;
   name: string;
-  price: number;
+  price: bigint;
   alv: number;
-  file_id?: string;
+  file_id?: Id<"_storage">;
 };
 
 /* ------------------------------------------------------------------ */
@@ -391,10 +392,9 @@ const defaultMeta = {
 /*  Currency formatter                                                 */
 /* ------------------------------------------------------------------ */
 
-const eur = new Intl.NumberFormat("fi-FI", {
-  style: "currency",
-  currency: "EUR",
-});
+function formatPrice(price: bigint) {
+  return (Number(price) / 100.0).toFixed(2) + " €";
+}
 
 /* ------------------------------------------------------------------ */
 /*  Main page                                                          */
@@ -403,7 +403,7 @@ const eur = new Intl.NumberFormat("fi-FI", {
 function WorkspacesPage() {
   const { workspaceId } = useParams({ from: "/myworkspaces/$workspaceId/" });
   const {
-    data: { workspaceName, receiptsByCategoryObject } = {},
+    data: receipts = [],
     isLoading,
     error,
   } = useQuery(
@@ -414,14 +414,22 @@ function WorkspacesPage() {
 
   /* Derived stats */
   const stats = useMemo(() => {
-    const entries = Object.entries(receiptsByCategoryObject ?? {});
-    const allReceipts = entries.flatMap(([, r]) => r);
-    return {
-      totalReceipts: allReceipts.length,
-      totalSpend: allReceipts.reduce((s, r) => s + r.price, 0),
-      categories: entries.length,
-    };
-  }, [receiptsByCategoryObject]);
+    const totalReceipts = receipts.length;
+    const totalSpend = receipts.reduce(
+      (s: bigint, r: ReceiptRow) => s + r.price,
+      BigInt(0),
+    );
+    const categories = new Set(receipts.map((r) => r.category));
+    const categoriesCount = categories.size;
+
+    const entries = Array.from(categories).map((category) => {
+      return {
+        category,
+        receipts: receipts.filter((r) => r.category === category),
+      };
+    });
+    return { totalReceipts, totalSpend, categoriesCount, entries };
+  }, [receipts]);
 
   if (isLoading) return <WorkspaceLoadingSkeleton />;
 
@@ -441,8 +449,6 @@ function WorkspacesPage() {
     );
   }
 
-  const entries = Object.entries(receiptsByCategoryObject ?? {});
-
   return (
     <div className="min-h-screen bg-background">
       {/* ── Header ───────────────────────────────────── */}
@@ -460,7 +466,7 @@ function WorkspacesPage() {
               Workspace
             </p>
             <h1 className="text-xl font-bold text-foreground tracking-tight truncate">
-              {workspaceName}
+              {receipts[0]?.category}
             </h1>
           </div>
         </div>
@@ -478,20 +484,20 @@ function WorkspacesPage() {
           <StatCard
             icon={<TrendingUp className="size-5" />}
             label="Total Spend"
-            value={eur.format(stats.totalSpend)}
+            value={formatPrice(stats.totalSpend)}
             accent
             delay={80}
           />
           <StatCard
             icon={<Layers className="size-5" />}
             label="Categories"
-            value={String(stats.categories)}
+            value={String(stats.categoriesCount)}
             delay={160}
           />
         </div>
 
         {/* ── Empty state ────────────────────────────── */}
-        {entries.length === 0 && (
+        {stats.entries.length === 0 && (
           <div className="text-center py-20 animate-pop-in space-y-3">
             <span className="text-5xl animate-gentle-bounce inline-block">
               🧾
@@ -505,9 +511,12 @@ function WorkspacesPage() {
         )}
 
         {/* ── Category sections ──────────────────────── */}
-        {entries.map(([category, receipts], sectionIndex) => {
+        {stats.entries.map(({ category, receipts }, sectionIndex) => {
           const meta = categoryMeta[category] ?? defaultMeta;
-          const categoryTotal = receipts.reduce((s, r) => s + r.price, 0);
+          const categoryTotal = receipts.reduce(
+            (s: bigint, r: ReceiptRow) => s + r.price,
+            BigInt(0),
+          );
 
           return (
             <section
@@ -525,12 +534,9 @@ function WorkspacesPage() {
                   </span>
                   {category}
                   <span className="ml-1 inline-flex items-center rounded-full bg-muted/60 px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground ring-1 ring-border/30">
-                    {receipts.length}
+                    {receipts.filter((r) => r.category === category).length}
                   </span>
                 </h2>
-                <span className="text-sm font-semibold text-muted-foreground tabular-nums">
-                  {eur.format(categoryTotal)}
-                </span>
               </div>
 
               {/* Table card */}
@@ -564,7 +570,7 @@ function WorkspacesPage() {
                           {receipt.name}
                         </td>
                         <td className="px-5 py-3.5 text-right tabular-nums font-semibold text-foreground">
-                          {eur.format(receipt.price)}
+                          {formatPrice(receipt.price)}
                         </td>
                         <td className="px-5 py-3.5 text-right tabular-nums text-muted-foreground">
                           {receipt.alv}&nbsp;%
@@ -582,7 +588,7 @@ function WorkspacesPage() {
                         Subtotal
                       </td>
                       <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
-                        {eur.format(categoryTotal)}
+                        {formatPrice(categoryTotal)}
                       </td>
                       <td />
                       <td />
