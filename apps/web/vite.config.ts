@@ -12,4 +12,8 @@ export default defineConfig({
   ssr: {
     noExternal: ["@convex-dev/better-auth"],
   },
+  preview: {
+    allowedHosts: ["securereceiptshare.janharkonen.fi"],
+    host: true,
+  },
 });

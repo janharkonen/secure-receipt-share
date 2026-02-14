@@ -23,6 +23,7 @@
     "dev:native": "turbo -F native dev",
     "dev:web": "turbo -F web dev",
     "dev:server": "turbo -F @secure-receipt-share/backend dev",
+    "start:web": "bun run --filter web start",
     "dev:setup": "turbo -F @secure-receipt-share/backend dev:setup"
   },
   "dependencies": {
