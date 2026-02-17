@@ -520,23 +520,31 @@ async function initializeServer() {
   // Build static routes with intelligent preloading
   const { routes } = await initializeStaticRoutes(CLIENT_DIRECTORY);
 
-  // Create Bun server
+  // Create Bun server.
+  // Do NOT use a dynamic "/*" route: Bun has a known issue where function-based
+  // wildcard routes return 404 for requests. Use the fetch handler instead so
+  // /api/auth/* and all app routes reach the TanStack Start handler.
   const server = Bun.serve({
     port: SERVER_PORT,
 
     routes: {
-      // Serve static assets (preloaded or on-demand)
+      // Serve static assets only (exact path matches from dist/client).
       ...routes,
+    },
 
-      // Fallback to TanStack Start handler for all other routes
-      "/*": (req: Request) => {
-        try {
-          return handler.fetch(req);
-        } catch (error) {
-          log.error(`Server handler error: ${String(error)}`);
-          return new Response("Internal Server Error", { status: 500 });
-        }
-      },
+    // Unmatched requests (e.g. /api/auth/get-session, /, /myworkspaces) go here.
+    async fetch(req: Request): Promise<Response> {
+      const pathname = new URL(req.url).pathname;
+      const staticHandler = routes[pathname];
+      if (staticHandler) {
+        return staticHandler(req);
+      }
+      try {
+        return await handler.fetch(req);
+      } catch (error) {
+        log.error(`Server handler error: ${String(error)}`);
+        return new Response("Internal Server Error", { status: 500 });
+      }
     },
 
     // Global error handler
