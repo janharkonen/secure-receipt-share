@@ -7,7 +7,7 @@ export default defineSchema({
     category: v.string(),
     name: v.string(),
     price: v.int64(),
-    alv: v.float64(),
+    alv: v.int64(),
     file_id: v.optional(v.id("_storage")),
   }),
   workspaces: defineTable({

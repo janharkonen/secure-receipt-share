@@ -37,7 +37,7 @@ export const getWorkspaceData = query({
         category: v.string(),
         name: v.string(),
         price: v.int64(),
-        alv: v.float64(),
+        alv: v.optional(v.int64()),
         file_id: v.optional(v.string()),
       }),
     ),
@@ -102,7 +102,7 @@ export const createReceipt = mutation({
     category: v.string(),
     name: v.string(),
     price: v.int64(),
-    alv: v.float64(),
+    alv: v.int64(),
     file_id: v.optional(v.id("_storage")),
   },
   returns: v.id("receipts"),
@@ -130,7 +130,7 @@ export const updateReceipt = mutation({
     category: v.optional(v.string()),
     name: v.optional(v.string()),
     price: v.optional(v.int64()),
-    alv: v.optional(v.float64()),
+    alv: v.optional(v.int64()),
     file_id: v.optional(v.id("_storage")),
   },
   returns: v.null(),
@@ -147,7 +147,7 @@ export const updateReceipt = mutation({
       category?: string;
       name?: string;
       price?: bigint;
-      alv?: number;
+      alv?: bigint;
       file_id?: Id<"_storage">;
     } = {};
     if (args.category !== undefined) updates.category = args.category;

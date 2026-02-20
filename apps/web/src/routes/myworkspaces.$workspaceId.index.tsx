@@ -33,7 +33,7 @@ type ReceiptRow = {
   category: string;
   name: string;
   price: bigint;
-  alv: number;
+  alv: bigint;
   file_id?: Id<"_storage">;
 };
 
@@ -347,7 +347,7 @@ function AddReceiptModal({
         category: category.trim(),
         name: name.trim(),
         price: BigInt(priceCents),
-        alv: alvNum,
+        alv: BigInt(alvNum),
         file_id: fileId,
       });
       onClose();
@@ -424,7 +424,7 @@ function AddReceiptModal({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="add-alv">ALV %</Label>
+            <Label htmlFor="add-alv">ALV (€)</Label>
             <Input
               id="add-alv"
               type="number"
@@ -616,7 +616,7 @@ function EditReceiptModal({
         category: category.trim() || undefined,
         name: name.trim() || undefined,
         price: BigInt(priceCents),
-        alv: alvNum,
+        alv: BigInt(alvNum),
         file_id: fileId,
       });
       onClose();
@@ -702,7 +702,7 @@ function EditReceiptModal({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="edit-alv">ALV %</Label>
+            <Label htmlFor="edit-alv">ALV (€)</Label>
             <Input
               id="edit-alv"
               type="number"
@@ -1092,7 +1092,7 @@ function WorkspacesPage() {
           );
           const categoryAlvTotal = receipts.reduce(
             (s: number, r: ReceiptRow) =>
-              s + Math.round(Number(r.price) * r.alv / 100),
+              s + Math.round((Number(r.price) * Number(r.alv)) / 100),
             0,
           );
 
@@ -1124,6 +1124,7 @@ function WorkspacesPage() {
                     <col />
                     <col className="w-[120px]" />
                     <col className="w-[120px]" />
+                    <col className="w-[120px]" />
                     <col className="w-[60px]" />
                   </colgroup>
                   <thead>
@@ -1136,6 +1137,9 @@ function WorkspacesPage() {
                       </th>
                       <th className="text-right px-5 py-3 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                         ALV
+                      </th>
+                      <th className="text-right px-5 py-3 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+                        Sum
                       </th>
                       <th className="px-5 py-3 text-center text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                         File
@@ -1167,7 +1171,26 @@ function WorkspacesPage() {
                           {formatPrice(receipt.price)}
                         </td>
                         <td className="px-5 py-3.5 text-right tabular-nums font-semibold text-foreground">
-                          {formatPrice(BigInt(Math.round(Number(receipt.price) * receipt.alv / 100)))}
+                          {formatPrice(
+                            BigInt(
+                              Math.round(
+                                (Number(receipt.price) * Number(receipt.alv)) /
+                                  100,
+                              ),
+                            ),
+                          )}
+                        </td>
+                        <td className="px-5 py-3.5 text-right tabular-nums font-semibold text-foreground">
+                          {formatPrice(
+                            receipt.price +
+                              BigInt(
+                                Math.round(
+                                  (Number(receipt.price) *
+                                    Number(receipt.alv)) /
+                                    100,
+                                ),
+                              ),
+                          )}
                         </td>
                         <td
                           className="px-5 py-3.5 text-center"
@@ -1190,6 +1213,9 @@ function WorkspacesPage() {
                       </td>
                       <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
                         {formatPrice(BigInt(categoryAlvTotal))}
+                      </td>
+                      <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
+                        {formatPrice(categoryTotal + BigInt(categoryAlvTotal))}
                       </td>
                       <td />
                     </tr>
