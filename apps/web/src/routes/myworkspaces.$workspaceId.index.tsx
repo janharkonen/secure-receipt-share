@@ -309,13 +309,13 @@ function AddReceiptModal({
     setIsSubmitting(true);
     try {
       const priceCents = Math.round(parseFloat(priceEur) * 100);
-      const alvNum = parseFloat(alv);
+      const alvCents = Math.round(parseFloat(alv) * 100);
       if (Number.isNaN(priceCents) || priceCents < 0) {
         setError("Price must be a valid non-negative number.");
         return;
       }
-      if (Number.isNaN(alvNum) || alvNum < 0 || alvNum > 100) {
-        setError("ALV must be a number between 0 and 100.");
+      if (Number.isNaN(alvCents) || alvCents < 0) {
+        setError("ALV must be a valid non-negative number.");
         return;
       }
       if (!category.trim()) {
@@ -347,7 +347,7 @@ function AddReceiptModal({
         category: category.trim(),
         name: name.trim(),
         price: BigInt(priceCents),
-        alv: BigInt(alvNum),
+        alv: BigInt(alvCents),
         file_id: fileId,
       });
       onClose();
@@ -558,7 +558,7 @@ function EditReceiptModal({
   const [priceEur, setPriceEur] = useState(
     (Number(receipt.price) / 100).toFixed(2),
   );
-  const [alv, setAlv] = useState(String(receipt.alv));
+  const [alvEur, setAlvEur] = useState((Number(receipt.alv) / 100).toFixed(2));
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -586,13 +586,13 @@ function EditReceiptModal({
     setIsSubmitting(true);
     try {
       const priceCents = Math.round(parseFloat(priceEur) * 100);
-      const alvNum = parseFloat(alv);
+      const alvCents = Math.round(parseFloat(alvEur) * 100);
       if (Number.isNaN(priceCents) || priceCents < 0) {
         setError("Price must be a valid non-negative number.");
         return;
       }
-      if (Number.isNaN(alvNum) || alvNum < 0 || alvNum > 100) {
-        setError("ALV must be a number between 0 and 100.");
+      if (Number.isNaN(alvCents) || alvCents < 0) {
+        setError("ALV must be a valid non-negative number.");
         return;
       }
 
@@ -616,7 +616,7 @@ function EditReceiptModal({
         category: category.trim() || undefined,
         name: name.trim() || undefined,
         price: BigInt(priceCents),
-        alv: BigInt(alvNum),
+        alv: BigInt(alvCents),
         file_id: fileId,
       });
       onClose();
@@ -707,8 +707,8 @@ function EditReceiptModal({
               id="edit-alv"
               type="number"
               step="0.01"
-              value={alv}
-              onChange={(e) => setAlv(e.target.value)}
+              value={alvEur}
+              onChange={(e) => setAlvEur(e.target.value)}
               className="rounded-xl"
               required
             />
@@ -982,7 +982,7 @@ function WorkspacesPage() {
   const stats = useMemo(() => {
     const totalReceipts = receipts.length;
     const totalSpend = receipts.reduce(
-      (s: bigint, r: ReceiptRow) => s + r.price,
+      (s: bigint, r: ReceiptRow) => s + r.price + r.alv + BigInt(1),
       BigInt(0),
     );
     const categories = new Set(receipts.map((r) => r.category));
@@ -1091,9 +1091,8 @@ function WorkspacesPage() {
             BigInt(0),
           );
           const categoryAlvTotal = receipts.reduce(
-            (s: number, r: ReceiptRow) =>
-              s + Math.round((Number(r.price) * Number(r.alv)) / 100),
-            0,
+            (s: bigint, r: ReceiptRow) => s + r.alv,
+            BigInt(0),
           );
 
           return (
@@ -1171,26 +1170,10 @@ function WorkspacesPage() {
                           {formatPrice(receipt.price)}
                         </td>
                         <td className="px-5 py-3.5 text-right tabular-nums text-foreground">
-                          {formatPrice(
-                            BigInt(
-                              Math.round(
-                                (Number(receipt.price) * Number(receipt.alv)) /
-                                  100,
-                              ),
-                            ),
-                          )}
+                          {formatPrice(receipt.alv)}
                         </td>
                         <td className="px-5 py-3.5 text-right tabular-nums font-semibold text-foreground">
-                          {formatPrice(
-                            receipt.price +
-                              BigInt(
-                                Math.round(
-                                  (Number(receipt.price) *
-                                    Number(receipt.alv)) /
-                                    100,
-                                ),
-                              ),
-                          )}
+                          {formatPrice(receipt.price + receipt.alv)}
                         </td>
                         <td
                           className="px-5 py-3.5 text-center"
@@ -1212,10 +1195,10 @@ function WorkspacesPage() {
                         {formatPrice(categoryTotal)}
                       </td>
                       <td className="px-5 py-3 text-right tabular-nums text-sm text-foreground">
-                        {formatPrice(BigInt(categoryAlvTotal))}
+                        {formatPrice(categoryAlvTotal)}
                       </td>
                       <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
-                        {formatPrice(categoryTotal + BigInt(categoryAlvTotal))}
+                        {formatPrice(categoryTotal + categoryAlvTotal)}
                       </td>
                       <td />
                     </tr>
