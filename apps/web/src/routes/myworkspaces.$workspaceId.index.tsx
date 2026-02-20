@@ -1167,10 +1167,10 @@ function WorkspacesPage() {
                         <td className="px-5 py-3.5 font-medium text-foreground group-hover:text-primary transition-colors">
                           {receipt.name}
                         </td>
-                        <td className="px-5 py-3.5 text-right tabular-nums font-semibold text-foreground">
+                        <td className="px-5 py-3.5 text-right tabular-nums text-foreground">
                           {formatPrice(receipt.price)}
                         </td>
-                        <td className="px-5 py-3.5 text-right tabular-nums font-semibold text-foreground">
+                        <td className="px-5 py-3.5 text-right tabular-nums text-foreground">
                           {formatPrice(
                             BigInt(
                               Math.round(
@@ -1205,13 +1205,13 @@ function WorkspacesPage() {
                   {/* Category subtotal row */}
                   <tfoot>
                     <tr className="border-t border-border/40 bg-muted/20">
-                      <td className="px-5 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      <td className="px-5 py-3 text-xs text-muted-foreground uppercase tracking-wider">
                         Subtotal
                       </td>
-                      <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
+                      <td className="px-5 py-3 text-right tabular-nums text-sm text-foreground">
                         {formatPrice(categoryTotal)}
                       </td>
-                      <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
+                      <td className="px-5 py-3 text-right tabular-nums text-sm text-foreground">
                         {formatPrice(BigInt(categoryAlvTotal))}
                       </td>
                       <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
