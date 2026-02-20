@@ -1090,6 +1090,11 @@ function WorkspacesPage() {
             (s: bigint, r: ReceiptRow) => s + r.price,
             BigInt(0),
           );
+          const categoryAlvTotal = receipts.reduce(
+            (s: number, r: ReceiptRow) =>
+              s + Math.round(Number(r.price) * r.alv / 100),
+            0,
+          );
 
           return (
             <section
@@ -1114,7 +1119,13 @@ function WorkspacesPage() {
 
               {/* Table card */}
               <div className="overflow-hidden rounded-2xl border border-border/40 bg-card shadow-md hover:shadow-lg transition-shadow duration-300">
-                <table className="w-full text-sm">
+                <table className="w-full table-fixed text-sm">
+                  <colgroup>
+                    <col />
+                    <col className="w-[120px]" />
+                    <col className="w-[120px]" />
+                    <col className="w-[60px]" />
+                  </colgroup>
                   <thead>
                     <tr className="border-b border-border/40 bg-muted/25">
                       <th className="text-left px-5 py-3 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -1124,9 +1135,9 @@ function WorkspacesPage() {
                         Price
                       </th>
                       <th className="text-right px-5 py-3 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-                        ALV&nbsp;%
+                        ALV
                       </th>
-                      <th className="w-14 px-5 py-3 text-center text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+                      <th className="px-5 py-3 text-center text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                         File
                       </th>
                     </tr>
@@ -1155,8 +1166,8 @@ function WorkspacesPage() {
                         <td className="px-5 py-3.5 text-right tabular-nums font-semibold text-foreground">
                           {formatPrice(receipt.price)}
                         </td>
-                        <td className="px-5 py-3.5 text-right tabular-nums text-muted-foreground">
-                          {receipt.alv}&nbsp;%
+                        <td className="px-5 py-3.5 text-right tabular-nums font-semibold text-foreground">
+                          {formatPrice(BigInt(Math.round(Number(receipt.price) * receipt.alv / 100)))}
                         </td>
                         <td
                           className="px-5 py-3.5 text-center"
@@ -1177,7 +1188,9 @@ function WorkspacesPage() {
                       <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
                         {formatPrice(categoryTotal)}
                       </td>
-                      <td />
+                      <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
+                        {formatPrice(BigInt(categoryAlvTotal))}
+                      </td>
                       <td />
                     </tr>
                   </tfoot>
