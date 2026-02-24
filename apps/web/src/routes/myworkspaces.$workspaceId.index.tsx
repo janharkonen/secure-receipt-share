@@ -982,7 +982,7 @@ function WorkspacesPage() {
   const stats = useMemo(() => {
     const totalReceipts = receipts.length;
     const totalSpend = receipts.reduce(
-      (s: bigint, r: ReceiptRow) => s + r.price + r.alv + BigInt(1),
+      (s: bigint, r: ReceiptRow) => s + r.price + r.alv,
       BigInt(0),
     );
     const categories = new Set(receipts.map((r) => r.category));
