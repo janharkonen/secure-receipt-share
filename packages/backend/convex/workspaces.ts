@@ -148,6 +148,21 @@ export const updateReceipt = mutation({
     if (!workspace?.access_rights.includes(authUser.email)) {
       throw new Error("Not authorized");
     }
+    // When replacing file_id or secondary_file_id, delete the old file from storage
+    if (
+      args.file_id !== undefined &&
+      receipt.file_id !== undefined &&
+      receipt.file_id !== args.file_id
+    ) {
+      await ctx.storage.delete(receipt.file_id);
+    }
+    if (
+      args.secondary_file_id !== undefined &&
+      receipt.secondary_file_id !== undefined &&
+      receipt.secondary_file_id !== args.secondary_file_id
+    ) {
+      await ctx.storage.delete(receipt.secondary_file_id);
+    }
     const updates: {
       category?: string;
       name?: string;
@@ -165,6 +180,31 @@ export const updateReceipt = mutation({
       updates.secondary_file_id = args.secondary_file_id;
     if (Object.keys(updates).length > 0) {
       await ctx.db.patch(args.receiptId, updates);
+    }
+    return null;
+  },
+});
+
+/** Delete a file from storage and remove its reference from the receipt. */
+export const deleteReceiptFile = mutation({
+  args: {
+    receiptId: v.id("receipts"),
+    field: v.union(v.literal("file_id"), v.literal("secondary_file_id")),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const receipt = await ctx.db.get(args.receiptId);
+    if (!receipt) throw new Error("Receipt not found");
+    const workspace = await ctx.db.get(receipt.workspace_id);
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) throw new Error("Not authenticated");
+    if (!workspace?.access_rights.includes(authUser.email)) {
+      throw new Error("Not authorized");
+    }
+    const storageId = receipt[args.field];
+    if (storageId) {
+      await ctx.storage.delete(storageId);
+      await ctx.db.patch(args.receiptId, { [args.field]: undefined });
     }
     return null;
   },

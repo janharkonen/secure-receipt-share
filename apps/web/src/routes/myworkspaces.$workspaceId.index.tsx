@@ -10,6 +10,7 @@ import {
   Loader2,
   Plus,
   Receipt,
+  Trash2,
   TrendingUp,
   Upload,
   X,
@@ -652,6 +653,7 @@ function EditReceiptModal({
 }) {
   const updateReceipt = useMutation(api.workspaces.updateReceipt);
   const generateUploadUrl = useMutation(api.workspaces.generateUploadUrl);
+  const deleteReceiptFile = useMutation(api.workspaces.deleteReceiptFile);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const secondaryFileInputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState(receipt.category);
@@ -664,6 +666,9 @@ function EditReceiptModal({
   const [selectedSecondaryFile, setSelectedSecondaryFile] =
     useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeletingFile, setIsDeletingFile] = useState<
+    "file_id" | "secondary_file_id" | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleKeyDown = useCallback(
@@ -905,9 +910,43 @@ function EditReceiptModal({
               )}
             </div>
             {receipt.file_id && !selectedFile && (
-              <p className="text-[11px] text-muted-foreground">
-                Existing file will be kept. Upload a new file to replace it.
-              </p>
+              <div className="flex items-center justify-between gap-2 mt-1.5">
+                <p className="text-[11px] text-muted-foreground">
+                  Existing file will be removed from storage when you replace it.
+                </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-destructive hover:text-destructive shrink-0 gap-1"
+                  disabled={isDeletingFile === "file_id"}
+                  onClick={async () => {
+                    setError(null);
+                    setIsDeletingFile("file_id");
+                    try {
+                      await deleteReceiptFile({
+                        receiptId: receipt._id,
+                        field: "file_id",
+                      });
+                      onClose();
+                    } catch (err) {
+                      setError(
+                        err instanceof Error ? err.message : "Failed to delete file",
+                      );
+                    } finally {
+                      setIsDeletingFile(null);
+                    }
+                  }}
+                  aria-label="Delete file from storage"
+                >
+                  {isDeletingFile === "file_id" ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="size-3.5" />
+                  )}
+                  Delete file
+                </Button>
+              </div>
             )}
           </div>
           <div className="space-y-2">
@@ -985,10 +1024,43 @@ function EditReceiptModal({
               )}
             </div>
             {receipt.secondary_file_id && !selectedSecondaryFile && (
-              <p className="text-[11px] text-muted-foreground">
-                Existing secondary file will be kept. Upload a new file to
-                replace it.
-              </p>
+              <div className="flex items-center justify-between gap-2 mt-1.5">
+                <p className="text-[11px] text-muted-foreground">
+Existing secondary file will be removed from storage when you replace it.
+                </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-destructive hover:text-destructive shrink-0 gap-1"
+                  disabled={isDeletingFile === "secondary_file_id"}
+                  onClick={async () => {
+                    setError(null);
+                    setIsDeletingFile("secondary_file_id");
+                    try {
+                      await deleteReceiptFile({
+                        receiptId: receipt._id,
+                        field: "secondary_file_id",
+                      });
+                      onClose();
+                    } catch (err) {
+                      setError(
+                        err instanceof Error ? err.message : "Failed to delete file",
+                      );
+                    } finally {
+                      setIsDeletingFile(null);
+                    }
+                  }}
+                  aria-label="Delete secondary file from storage"
+                >
+                  {isDeletingFile === "secondary_file_id" ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="size-3.5" />
+                  )}
+                  Delete file
+                </Button>
+              </div>
             )}
           </div>
           {error && (
