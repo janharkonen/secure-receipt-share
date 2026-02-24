@@ -39,6 +39,7 @@ export const getWorkspaceData = query({
         price: v.int64(),
         alv: v.optional(v.int64()),
         file_id: v.optional(v.string()),
+        secondary_file_id: v.optional(v.string()),
       }),
     ),
   }),
@@ -71,6 +72,7 @@ export const getWorkspaceData = query({
       price: receipt.price,
       alv: receipt.alv,
       file_id: receipt.file_id,
+      secondary_file_id: receipt.secondary_file_id,
     }));
     return {
       workspace_name: workspaceName,
@@ -104,6 +106,7 @@ export const createReceipt = mutation({
     price: v.int64(),
     alv: v.int64(),
     file_id: v.optional(v.id("_storage")),
+    secondary_file_id: v.optional(v.id("_storage")),
   },
   returns: v.id("receipts"),
   handler: async (ctx, args) => {
@@ -120,6 +123,7 @@ export const createReceipt = mutation({
       price: args.price,
       alv: args.alv,
       file_id: args.file_id,
+      secondary_file_id: args.secondary_file_id,
     });
   },
 });
@@ -132,6 +136,7 @@ export const updateReceipt = mutation({
     price: v.optional(v.int64()),
     alv: v.optional(v.int64()),
     file_id: v.optional(v.id("_storage")),
+    secondary_file_id: v.optional(v.id("_storage")),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -149,12 +154,15 @@ export const updateReceipt = mutation({
       price?: bigint;
       alv?: bigint;
       file_id?: Id<"_storage">;
+      secondary_file_id?: Id<"_storage">;
     } = {};
     if (args.category !== undefined) updates.category = args.category;
     if (args.name !== undefined) updates.name = args.name;
     if (args.price !== undefined) updates.price = args.price;
     if (args.alv !== undefined) updates.alv = args.alv;
     if (args.file_id !== undefined) updates.file_id = args.file_id;
+    if (args.secondary_file_id !== undefined)
+      updates.secondary_file_id = args.secondary_file_id;
     if (Object.keys(updates).length > 0) {
       await ctx.db.patch(args.receiptId, updates);
     }

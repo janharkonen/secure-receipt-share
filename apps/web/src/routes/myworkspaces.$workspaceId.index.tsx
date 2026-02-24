@@ -35,20 +35,28 @@ type ReceiptRow = {
   price: bigint;
   alv: bigint;
   file_id?: Id<"_storage">;
+  secondary_file_id?: Id<"_storage">;
 };
 
 /* ------------------------------------------------------------------ */
 /*  Attachment button                                                  */
 /* ------------------------------------------------------------------ */
 
-function ReceiptAttachmentButton({ receipt }: { receipt: ReceiptRow }) {
+function ReceiptAttachmentButton({
+  receipt,
+  useSecondary = false,
+}: {
+  receipt: ReceiptRow;
+  useSecondary?: boolean;
+}) {
+  const storageId = useSecondary ? receipt.secondary_file_id : receipt.file_id;
   const [showPdf, setShowPdf] = useState(false);
   const storageUrl = useConvexQuery(
     api.workspaces.getStorageUrl,
-    receipt.file_id ? { storageId: receipt.file_id as Id<"_storage"> } : "skip",
+    storageId ? { storageId: storageId as Id<"_storage"> } : "skip",
   );
 
-  if (!receipt.file_id) {
+  if (!storageId) {
     return <span className="text-muted-foreground/40">—</span>;
   }
 
@@ -278,11 +286,14 @@ function AddReceiptModal({
   const createReceipt = useMutation(api.workspaces.createReceipt);
   const generateUploadUrl = useMutation(api.workspaces.generateUploadUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const secondaryFileInputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState("");
   const [name, setName] = useState("");
   const [priceEur, setPriceEur] = useState("");
   const [alv, setAlv] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedSecondaryFile, setSelectedSecondaryFile] =
+    useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -342,6 +353,21 @@ function AddReceiptModal({
         fileId = storageId;
       }
 
+      let secondaryFileId: Id<"_storage"> | undefined;
+      if (selectedSecondaryFile) {
+        const postUrl = await generateUploadUrl();
+        const result = await fetch(postUrl, {
+          method: "POST",
+          headers: { "Content-Type": selectedSecondaryFile.type },
+          body: selectedSecondaryFile,
+        });
+        if (!result.ok) throw new Error("Secondary file upload failed");
+        const { storageId } = (await result.json()) as {
+          storageId: Id<"_storage">;
+        };
+        secondaryFileId = storageId;
+      }
+
       await createReceipt({
         workspaceId,
         category: category.trim(),
@@ -349,6 +375,7 @@ function AddReceiptModal({
         price: BigInt(priceCents),
         alv: BigInt(alvCents),
         file_id: fileId,
+        secondary_file_id: secondaryFileId,
       });
       onClose();
     } catch (err) {
@@ -506,6 +533,79 @@ function AddReceiptModal({
               )}
             </div>
           </div>
+          <div className="space-y-2">
+            <Label>Secondary attachment</Label>
+            <div className="rounded-xl border border-border/50 border-dashed bg-muted/20 p-4 transition-colors hover:bg-muted/30">
+              <input
+                ref={secondaryFileInputRef}
+                type="file"
+                accept={ACCEPTED_FILE_TYPES}
+                className="sr-only"
+                onChange={(e) =>
+                  setSelectedSecondaryFile(e.target.files?.[0] ?? null)
+                }
+              />
+              {selectedSecondaryFile ? (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <FileText className="size-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {selectedSecondaryFile.name}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {(selectedSecondaryFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 gap-1.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => secondaryFileInputRef.current?.click()}
+                    >
+                      Replace
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive hover:text-destructive"
+                      onClick={() => {
+                        setSelectedSecondaryFile(null);
+                        if (secondaryFileInputRef.current)
+                          secondaryFileInputRef.current.value = "";
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => secondaryFileInputRef.current?.click()}
+                  className="flex w-full flex-col items-center gap-2 py-2 text-center"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Upload className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Upload secondary file
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Optional second attachment
+                    </p>
+                  </div>
+                </button>
+              )}
+            </div>
+          </div>
           {error && (
             <p className="text-sm text-destructive font-medium">{error}</p>
           )}
@@ -553,6 +653,7 @@ function EditReceiptModal({
   const updateReceipt = useMutation(api.workspaces.updateReceipt);
   const generateUploadUrl = useMutation(api.workspaces.generateUploadUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const secondaryFileInputRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState(receipt.category);
   const [name, setName] = useState(receipt.name);
   const [priceEur, setPriceEur] = useState(
@@ -560,6 +661,8 @@ function EditReceiptModal({
   );
   const [alvEur, setAlvEur] = useState((Number(receipt.alv) / 100).toFixed(2));
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedSecondaryFile, setSelectedSecondaryFile] =
+    useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -611,6 +714,21 @@ function EditReceiptModal({
         fileId = storageId;
       }
 
+      let secondaryFileId: Id<"_storage"> | undefined = receipt.secondary_file_id;
+      if (selectedSecondaryFile) {
+        const postUrl = await generateUploadUrl();
+        const result = await fetch(postUrl, {
+          method: "POST",
+          headers: { "Content-Type": selectedSecondaryFile.type },
+          body: selectedSecondaryFile,
+        });
+        if (!result.ok) throw new Error("Secondary file upload failed");
+        const { storageId } = (await result.json()) as {
+          storageId: Id<"_storage">;
+        };
+        secondaryFileId = storageId;
+      }
+
       await updateReceipt({
         receiptId: receipt._id,
         category: category.trim() || undefined,
@@ -618,6 +736,7 @@ function EditReceiptModal({
         price: BigInt(priceCents),
         alv: BigInt(alvCents),
         file_id: fileId,
+        secondary_file_id: secondaryFileId,
       });
       onClose();
     } catch (err) {
@@ -788,6 +907,87 @@ function EditReceiptModal({
             {receipt.file_id && !selectedFile && (
               <p className="text-[11px] text-muted-foreground">
                 Existing file will be kept. Upload a new file to replace it.
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label>Secondary attachment</Label>
+            <div className="rounded-xl border border-border/50 border-dashed bg-muted/20 p-4 transition-colors hover:bg-muted/30">
+              <input
+                ref={secondaryFileInputRef}
+                type="file"
+                accept={ACCEPTED_FILE_TYPES}
+                className="sr-only"
+                onChange={(e) =>
+                  setSelectedSecondaryFile(e.target.files?.[0] ?? null)
+                }
+              />
+              {selectedSecondaryFile ? (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <FileText className="size-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {selectedSecondaryFile.name}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {(selectedSecondaryFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 gap-1.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => secondaryFileInputRef.current?.click()}
+                    >
+                      Replace
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive hover:text-destructive"
+                      onClick={() => {
+                        setSelectedSecondaryFile(null);
+                        if (secondaryFileInputRef.current)
+                          secondaryFileInputRef.current.value = "";
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => secondaryFileInputRef.current?.click()}
+                  className="flex w-full flex-col items-center gap-2 py-2 text-center"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Upload className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {receipt.secondary_file_id
+                        ? "Replace secondary attachment"
+                        : "Upload secondary file"}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Optional second attachment
+                    </p>
+                  </div>
+                </button>
+              )}
+            </div>
+            {receipt.secondary_file_id && !selectedSecondaryFile && (
+              <p className="text-[11px] text-muted-foreground">
+                Existing secondary file will be kept. Upload a new file to
+                replace it.
               </p>
             )}
           </div>
@@ -1125,6 +1325,7 @@ function WorkspacesPage() {
                     <col className="w-[120px]" />
                     <col className="w-[120px]" />
                     <col className="w-[60px]" />
+                    <col className="w-[60px]" />
                   </colgroup>
                   <thead>
                     <tr className="border-b border-border/40 bg-muted/25">
@@ -1142,6 +1343,9 @@ function WorkspacesPage() {
                       </th>
                       <th className="px-5 py-3 text-center text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                         File
+                      </th>
+                      <th className="px-5 py-3 text-center text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+                        File 2
                       </th>
                     </tr>
                   </thead>
@@ -1182,6 +1386,16 @@ function WorkspacesPage() {
                         >
                           <ReceiptAttachmentButton receipt={receipt} />
                         </td>
+                        <td
+                          className="px-5 py-3.5 text-center"
+                          onClick={(e) => e.stopPropagation()}
+                          onDoubleClick={(e) => e.stopPropagation()}
+                        >
+                          <ReceiptAttachmentButton
+                            receipt={receipt}
+                            useSecondary
+                          />
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -1200,6 +1414,7 @@ function WorkspacesPage() {
                       <td className="px-5 py-3 text-right tabular-nums text-sm font-bold text-foreground">
                         {formatPrice(categoryTotal + categoryAlvTotal)}
                       </td>
+                      <td />
                       <td />
                     </tr>
                   </tfoot>

@@ -9,6 +9,7 @@ export default defineSchema({
     price: v.int64(),
     alv: v.int64(),
     file_id: v.optional(v.id("_storage")),
+    secondary_file_id: v.optional(v.id("_storage")),
   }),
   workspaces: defineTable({
     access_rights: v.array(v.string()),
