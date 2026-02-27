@@ -70,6 +70,23 @@ function WorkspacesPage() {
               <div className="font-bold text-foreground group-hover:text-primary transition-colors text-base mb-1">
                 {workspace.workspace_name}
               </div>
+              {workspace.access_rights?.length > 0 && (
+                <div className="mb-2">
+                  <div className="text-[10px] text-muted-foreground/80 uppercase tracking-wide mb-1">
+                    Access right given to:
+                  </div>
+                  <div className="text-xs text-muted-foreground flex flex-wrap gap-x-1.5 gap-y-0.5">
+                  {workspace.access_rights.map((email) => (
+                    <span
+                      key={email}
+                      className="inline-flex items-center rounded-md bg-muted/60 px-1.5 py-0.5"
+                    >
+                      {email}
+                    </span>
+                  ))}
+                  </div>
+                </div>
+              )}
               <div className="text-sm text-muted-foreground flex items-center gap-1">
                 View receipts
                 <svg

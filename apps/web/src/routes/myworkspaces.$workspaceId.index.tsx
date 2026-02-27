@@ -1238,10 +1238,11 @@ function WorkspacesPage() {
   const [editingReceipt, setEditingReceipt] = useState<ReceiptRow | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const {
-    data: { workspace_name, receipts } = {
+    data: { workspace_name, access_rights, receipts } = {
       workspace_name: "",
+      access_rights: [] as string[],
       receipts: [],
-    } as { workspace_name: string; receipts: ReceiptRow[] },
+    } as { workspace_name: string; access_rights: string[]; receipts: ReceiptRow[] },
     isLoading,
     error,
   } = useQuery(
@@ -1306,6 +1307,23 @@ function WorkspacesPage() {
             <h1 className="text-xl font-bold text-foreground tracking-tight truncate">
               {workspace_name}
             </h1>
+            {access_rights?.length > 0 && (
+              <div className="mt-1.5">
+                <div className="text-[10px] text-muted-foreground/80 uppercase tracking-wide mb-1">
+                  Access right given to:
+                </div>
+                <div className="flex flex-wrap gap-x-1.5 gap-y-0.5">
+                  {access_rights.map((email) => (
+                    <span
+                      key={email}
+                      className="inline-flex items-center rounded-md bg-muted/60 px-1.5 py-0.5 text-xs text-muted-foreground"
+                    >
+                      {email}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>

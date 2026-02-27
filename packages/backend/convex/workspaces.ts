@@ -8,6 +8,7 @@ export const getMyWorkspaces = query({
     v.object({
       _id: v.string(),
       workspace_name: v.string(),
+      access_rights: v.array(v.string()),
     }),
   ),
   handler: async (ctx) => {
@@ -24,6 +25,7 @@ export const getMyWorkspaces = query({
     return workspaces.map((workspace) => ({
       _id: workspace._id.toString(),
       workspace_name: workspace.workspace_name,
+      access_rights: workspace.access_rights,
     }));
   },
 });
@@ -31,6 +33,7 @@ export const getMyWorkspaces = query({
 export const getWorkspaceData = query({
   returns: v.object({
     workspace_name: v.string(),
+    access_rights: v.array(v.string()),
     receipts: v.array(
       v.object({
         _id: v.id("receipts"),
@@ -76,6 +79,7 @@ export const getWorkspaceData = query({
     }));
     return {
       workspace_name: workspaceName,
+      access_rights: workspace.access_rights,
       receipts: receiptsData,
     };
   },
