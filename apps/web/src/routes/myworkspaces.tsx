@@ -1,6 +1,9 @@
+import { api } from "@secure-receipt-share/backend/convex/_generated/api";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/myworkspaces")({
@@ -9,6 +12,7 @@ export const Route = createFileRoute("/myworkspaces")({
 
 function WorkspacesPage() {
   const navigate = useNavigate();
+  const user = useQuery(api.auth.getCurrentUser);
   const handleSignOut = async () => {
     await authClient.signOut({
       fetchOptions: {
@@ -33,9 +37,14 @@ function WorkspacesPage() {
               Secure Receipt Share
             </span>
           </div>
-          <Button variant="outline" size="sm" onClick={handleSignOut}>
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">
+              You are signed in as <Badge variant="secondary">{user?.email ?? "..."}</Badge>
+            </span>
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
+              Sign Out
+            </Button>
+          </div>
         </div>
       </nav>
       <main className="max-w-6xl mx-auto px-6 py-8">
