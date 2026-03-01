@@ -101,6 +101,7 @@ function PdfViewerModal({
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [useIframe, setUseIframe] = useState(false);
 
   // Close on Escape
   const handleKeyDown = useCallback(
@@ -121,7 +122,8 @@ function PdfViewerModal({
     };
   }, [handleKeyDown]);
 
-  const isPdf = url.toLowerCase().endsWith(".pdf") || url.includes("pdf");
+  const urlLower = url.toLowerCase().split("?")[0];
+  const isPdf = urlLower.endsWith(".pdf") || url.includes("pdf");
   // Google Docs viewer fallback for better cross-browser PDF rendering
   const viewerUrl = isPdf
     ? `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`
@@ -156,7 +158,9 @@ function PdfViewerModal({
               <p className="truncate text-sm font-bold text-foreground leading-tight">
                 {title}
               </p>
-              <p className="text-[11px] text-muted-foreground">PDF document</p>
+              <p className="text-[11px] text-muted-foreground">
+                {useIframe ? "PDF document" : "Image"}
+              </p>
             </div>
           </div>
 
@@ -245,16 +249,28 @@ function PdfViewerModal({
             </div>
           )}
 
-          <iframe
-            src={viewerUrl}
-            title={title}
-            className="h-full w-full rounded-2xl border-0"
-            onLoad={() => setIsLoading(false)}
-            onError={() => {
-              setIsLoading(false);
-              setHasError(true);
-            }}
-          />
+          {/* Try rendering as an image first; if it fails (e.g. it's a PDF), fall back to iframe */}
+          {!useIframe && (
+            <img
+              src={url}
+              alt={title}
+              className="h-full w-full rounded-2xl object-contain"
+              onLoad={() => setIsLoading(false)}
+              onError={() => setUseIframe(true)}
+            />
+          )}
+          {useIframe && (
+            <iframe
+              src={viewerUrl}
+              title={title}
+              className="h-full w-full rounded-2xl border-0"
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setHasError(true);
+              }}
+            />
+          )}
         </div>
 
         {/* ── Bottom hint ─────────────────────────── */}
